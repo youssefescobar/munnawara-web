@@ -1,6 +1,7 @@
 "use client"
 
 import busLoaderAnimation from "@/assets/lottie/bus-loader.json"
+import ShinyText from "@/components/react-bits/ShinyText"
 import { cn } from "@/lib/cn"
 import lottie, { type AnimationItem } from "lottie-web"
 import { useEffect, useRef } from "react"
@@ -47,7 +48,7 @@ export const BusLoader = ({
       role="status"
       aria-live="polite"
       aria-label={label}
-      className={cn("flex flex-col items-center justify-center", className)}
+      className={cn("flex flex-col items-center justify-center gap-1", className)}
     >
       <div
         ref={containerRef}
@@ -55,7 +56,15 @@ export const BusLoader = ({
         style={{ width: size, height: size }}
         aria-hidden
       />
-      <span className="sr-only">{label}</span>
+      <ShinyText
+        text={label}
+        speed={2.4}
+        delay={0.35}
+        yoyo
+        color="#d4d0d8"
+        shineColor="#ffffff"
+        className="font-label text-sm font-semibold tracking-wide"
+      />
     </div>
   )
 }
