@@ -104,8 +104,15 @@ html[lang="en"] body {
 }
 
 .font-label {
-  font-family: var(--font-label-ar), var(--font-label), var(--font-arabic),
-    var(--font-latin), sans-serif;
+  font-family: var(--font-label), var(--font-latin), sans-serif;
+}
+
+html[lang="ar"] .font-label {
+  font-family: var(--font-arabic), var(--font-label), sans-serif;
+}
+
+.font-arabic {
+  font-family: var(--font-arabic), var(--font-latin), system-ui, sans-serif;
 }
 
 body {

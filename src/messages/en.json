@@ -38,7 +38,8 @@
     "phone": "Phone",
     "email": "Email",
     "workingHours": "Working hours",
-    "mapPending": "Map embed coming in a later milestone"
+    "mapPending": "Map embed coming in a later milestone",
+    "loading": "Loading"
   },
   "hajj": {
     "step1": "Contact us and request a quote",

@@ -19,7 +19,7 @@ export const LanguageSwitcher = ({ className }: LanguageSwitcherProps) => {
       href={pathname}
       locale={nextLocale}
       className={cn(
-        "font-label rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-ink-muted transition hover:bg-surface-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange",
+        "font-arabic rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-ink-muted transition hover:bg-surface-muted hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange",
         className,
       )}
       aria-label={t("switchLanguage")}

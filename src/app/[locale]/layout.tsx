@@ -2,16 +2,12 @@ import { Footer } from "@/components/layout/Footer"
 import { Header } from "@/components/layout/Header"
 import { WhatsAppButton } from "@/components/layout/WhatsAppButton"
 import { SmoothScrollProvider } from "@/components/motion/SmoothScrollProvider"
+import { PageLoader } from "@/components/ui/PageLoader"
 import { routing } from "@/i18n/routing"
 import { NextIntlClientProvider, hasLocale } from "next-intl"
 import { getMessages, setRequestLocale } from "next-intl/server"
-import {
-  IBM_Plex_Sans,
-  IBM_Plex_Sans_Arabic,
-  Noto_Sans,
-  Noto_Sans_Arabic,
-  Noto_Serif,
-} from "next/font/google"
+import { IBM_Plex_Sans, Noto_Sans, Noto_Serif } from "next/font/google"
+import localFont from "next/font/local"
 import type { Metadata } from "next"
 import { notFound } from "next/navigation"
 import type { ReactNode } from "react"
@@ -24,11 +20,11 @@ export const metadata: Metadata = {
   },
 }
 
-const fontArabic = Noto_Sans_Arabic({
-  subsets: ["arabic"],
-  weight: ["400", "500", "600", "700"],
+const fontArabic = localFont({
+  src: "../../fonts/cairo/Cairo-Variable.ttf",
   variable: "--font-arabic",
   display: "swap",
+  weight: "200 1000",
 })
 
 const fontLatin = Noto_Sans({
@@ -49,13 +45,6 @@ const fontLabel = IBM_Plex_Sans({
   subsets: ["latin"],
   weight: ["500", "600"],
   variable: "--font-label",
-  display: "swap",
-})
-
-const fontLabelAr = IBM_Plex_Sans_Arabic({
-  subsets: ["arabic"],
-  weight: ["500", "600"],
-  variable: "--font-label-ar",
   display: "swap",
 })
 
@@ -81,11 +70,12 @@ const LocaleLayout = async ({ children, params }: LocaleLayoutProps) => {
     <html
       lang={locale}
       dir={dir}
-      className={`${fontArabic.variable} ${fontLatin.variable} ${fontDisplay.variable} ${fontLabel.variable} ${fontLabelAr.variable}`}
+      className={`${fontArabic.variable} ${fontLatin.variable} ${fontDisplay.variable} ${fontLabel.variable}`}
     >
       <body className="antialiased">
         <NextIntlClientProvider messages={messages}>
           <SmoothScrollProvider>
+            <PageLoader />
             <Header />
             <main id="main" className="min-h-[60dvh]">{children}</main>
             <Footer />
