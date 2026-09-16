@@ -10,9 +10,9 @@ import {
   type TransitionEvent,
 } from "react"
 
-const MIN_VISIBLE_MS = 1600
+const MIN_VISIBLE_MS = 1100
 const MAX_WAIT_MS = 8000
-const FADE_MS = 900
+const FADE_MS = 700
 
 const isInternalNavLink = (anchor: HTMLAnchorElement) => {
   if (anchor.target === "_blank" || anchor.hasAttribute("download")) return false

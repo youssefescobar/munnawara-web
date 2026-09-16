@@ -1,5 +1,5 @@
-import { AnimatedSection } from "@/components/motion/AnimatedSection"
-import { PageIntro } from "@/components/ui/PageIntro"
+import { ClientLogoLoop } from "@/components/sections/ClientLogoLoop"
+import { PageShell } from "@/components/layout/PageShell"
 import { getClients } from "@/content"
 import type { AppLocale } from "@/content/types"
 import { getTranslations, setRequestLocale } from "next-intl/server"
@@ -16,11 +16,17 @@ const ClientsPage = async ({ params }: PageProps) => {
   const clients = getClients(locale as AppLocale)
 
   return (
-    <AnimatedSection className="pb-28 pt-20">
-      <PageIntro title={t("clients")} subtitle={tHome("clientsTitle")} />
-      <div className="mx-auto mt-16 max-w-2xl px-6">
+    <PageShell title={t("clients")} subtitle={tHome("clientsTitle")}>
+      <ClientLogoLoop
+        title={tHome("clientsTitle")}
+        labels={clients.map((client) => client.label)}
+      />
+      <div className="mx-auto mt-14 max-w-2xl space-y-0">
         {clients.map((client) => (
-          <article key={client.id} className="border-b border-ink/8 py-10">
+          <article
+            key={client.id}
+            className="border-b border-border py-8 first:pt-0"
+          >
             <h2 className="text-2xl font-semibold tracking-tight text-ink">
               {client.label}
             </h2>
@@ -28,7 +34,7 @@ const ClientsPage = async ({ params }: PageProps) => {
           </article>
         ))}
       </div>
-    </AnimatedSection>
+    </PageShell>
   )
 }
 

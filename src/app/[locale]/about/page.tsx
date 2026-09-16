@@ -1,5 +1,4 @@
-import { AnimatedSection } from "@/components/motion/AnimatedSection"
-import { PageIntro } from "@/components/ui/PageIntro"
+import { PageShell } from "@/components/layout/PageShell"
 import { getAbout } from "@/content"
 import type { AppLocale } from "@/content/types"
 import { setRequestLocale } from "next-intl/server"
@@ -14,19 +13,18 @@ const AboutPage = async ({ params }: PageProps) => {
   const about = getAbout(locale as AppLocale)
 
   return (
-    <AnimatedSection className="pb-28 pt-20">
-      <PageIntro title={about.title} subtitle={about.intro} />
-      <div className="mx-auto mt-20 max-w-2xl space-y-16 px-6">
-        <div>
-          <h2 className="text-3xl font-semibold tracking-tight text-ink">
+    <PageShell title={about.title} subtitle={about.intro} align="start">
+      <div className="mx-auto max-w-2xl space-y-14">
+        <div className="rounded-2xl border border-border bg-surface-elevated p-8 shadow-sm md:p-10">
+          <h2 className="font-display text-3xl font-semibold tracking-tight text-ink">
             {about.historyTitle}
           </h2>
           <p className="mt-4 text-lg leading-relaxed text-ink-muted">
             {about.history}
           </p>
         </div>
-        <div>
-          <h2 className="text-3xl font-semibold tracking-tight text-ink">
+        <div className="rounded-2xl border border-border bg-surface-mint p-8 md:p-10">
+          <h2 className="font-display text-3xl font-semibold tracking-tight text-ink">
             {about.missionTitle}
           </h2>
           <p className="mt-4 text-lg leading-relaxed text-ink-muted">
@@ -37,7 +35,7 @@ const AboutPage = async ({ params }: PageProps) => {
           <p className="text-sm text-ink-muted">{about.licensingNote}</p>
         ) : null}
       </div>
-    </AnimatedSection>
+    </PageShell>
   )
 }
 

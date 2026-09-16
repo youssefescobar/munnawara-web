@@ -116,12 +116,12 @@ html[lang="ar"] .font-label {
 }
 
 body {
-  background: #ffffff;
+  background: var(--brand-white);
   color: var(--brand-ink);
   min-height: 100dvh;
   letter-spacing: -0.01em;
   line-height: 1.6;
-  overflow-x: clip;
+  /* Do not set overflow-x on body — it breaks position:sticky (bus passby). */
 }
 
 ::selection {
@@ -161,23 +161,13 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-ken-burns,
-  .animate-haze,
-  .animate-haze-slow {
-    animation: none !important;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
 
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+  .animate-ken-burns,
+  .animate-haze,
+  .animate-haze-slow {
+    animation: none !important;
   }
 }

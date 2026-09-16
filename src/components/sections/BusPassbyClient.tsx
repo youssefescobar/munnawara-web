@@ -25,47 +25,69 @@ export const BusPassbyClient = ({
   const locale = useLocale()
   const isRtl = locale === "ar"
   const rootRef = useRef<HTMLElement>(null)
+  const pinRef = useRef<HTMLDivElement>(null)
   const busRef = useRef<HTMLDivElement>(null)
   const titleBeforeRef = useRef<HTMLHeadingElement>(null)
   const titleAfterRef = useRef<HTMLHeadingElement>(null)
 
   useEffect(() => {
-    if (reduced || !rootRef.current || !busRef.current) return
+    if (reduced || !rootRef.current || !pinRef.current || !busRef.current) return
+
+    const root = rootRef.current
+    const pin = pinRef.current
+    const bus = busRef.current
+    const startX = isRtl ? "75vw" : "-75vw"
+    const endX = isRtl ? "-75vw" : "75vw"
 
     const ctx = gsap.context(() => {
-      const startX = isRtl ? "70vw" : "-70vw"
-      const endX = isRtl ? "-70vw" : "70vw"
-
-      gsap.set(busRef.current, { x: startX })
+      gsap.set(bus, { x: startX })
       gsap.set(titleBeforeRef.current, { opacity: 1 })
       gsap.set(titleAfterRef.current, { opacity: 0 })
 
-      gsap.to(busRef.current, {
+      // Pin with ScrollTrigger so Lenis + sticky quirks can't strand the bus off-screen.
+      ScrollTrigger.create({
+        trigger: root,
+        start: "top top",
+        end: "bottom bottom",
+        pin: pin,
+        pinSpacing: false,
+        anticipatePin: 1,
+      })
+
+      gsap.to(bus, {
         x: endX,
         ease: "none",
         scrollTrigger: {
-          trigger: rootRef.current,
+          trigger: root,
           start: "top top",
           end: "bottom bottom",
-          scrub: 0.25,
+          scrub: 0.35,
           invalidateOnRefresh: true,
         },
       })
 
       const copyTl = gsap.timeline({
         scrollTrigger: {
-          trigger: rootRef.current,
+          trigger: root,
           start: "top top",
           end: "bottom bottom",
           scrub: true,
         },
       })
-      copyTl.to(titleBeforeRef.current, { opacity: 0, duration: 0.1, ease: "none" }, 0.45)
-      copyTl.to(titleAfterRef.current, { opacity: 1, duration: 0.1, ease: "none" }, 0.5)
-      copyTl.set({}, {}, 1)
-    }, rootRef)
+      copyTl.to(titleBeforeRef.current, { opacity: 0, duration: 0.12, ease: "none" }, 0.42)
+      copyTl.to(titleAfterRef.current, { opacity: 1, duration: 0.12, ease: "none" }, 0.48)
+    }, root)
 
-    return () => ctx.revert()
+    const refresh = () => ScrollTrigger.refresh()
+    refresh()
+    window.addEventListener("load", refresh)
+    const timeout = window.setTimeout(refresh, 200)
+
+    return () => {
+      window.clearTimeout(timeout)
+      window.removeEventListener("load", refresh)
+      ctx.revert()
+    }
   }, [reduced, isRtl])
 
   const titleClass = cn(
@@ -78,10 +100,10 @@ export const BusPassbyClient = ({
   return (
     <section
       ref={rootRef}
-      className="relative h-[140vh] bg-white md:h-[160vh]"
+      className="relative h-[150vh] bg-white md:h-[170vh]"
       aria-label={`${title}. ${titleAfter}`}
     >
-      <div className="sticky top-0 h-dvh overflow-hidden">
+      <div ref={pinRef} className="relative h-dvh overflow-hidden">
         <p
           className={cn(
             "font-label pointer-events-none absolute inset-x-0 top-[12%] z-30 mx-auto max-w-[80rem] px-4 text-center text-[11px] font-semibold text-orange sm:top-[14%] sm:text-xs md:top-[15%] md:px-10",
@@ -138,7 +160,7 @@ export const BusPassbyClient = ({
               height={452}
               className="h-auto w-full select-none drop-shadow-[0_24px_60px_rgb(26_18_16/0.18)]"
               sizes="(max-width:768px) 160vw, 82rem"
-              priority={false}
+              priority
             />
           </div>
         </div>

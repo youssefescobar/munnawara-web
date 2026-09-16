@@ -17,7 +17,9 @@
     "contact": "تواصل معنا",
     "openMenu": "فتح القائمة",
     "closeMenu": "إغلاق القائمة",
-    "switchLanguage": "English"
+    "switchLanguage": "English",
+    "menuPrimary": "التنقل",
+    "menuMore": "المزيد"
   },
   "common": {
     "learnMore": "اعرف المزيد",
@@ -54,10 +56,16 @@
     "contracts": "عقود نقل مؤسسية منتظمة"
   },
   "footer": {
-    "tagline": "نقل موثوق للحجاج والمعتمرين والمؤسسات",
+    "tagline": "نقل موثوق للحجاج والمعتمرين والمؤسسات — بعناية وترتيب عبر المملكة.",
     "rights": "جميع الحقوق محفوظة",
     "quickLinks": "روابط سريعة",
-    "companies": "شركات المجموعة"
+    "companies": "شركات المجموعة",
+    "explore": "استكشف",
+    "company": "الشركة",
+    "contact": "تواصل",
+    "ctaEyebrow": "خطّطوا لرحلتكم",
+    "ctaTitle": "جاهزون عندما تكون مجموعتكم جاهزة",
+    "ctaSubtitle": "اطلبوا خطة نقل مخصصة للحج أو العمرة أو النقل المؤسسي."
   },
   "home": {
     "headline": "رحلتكم تبدأ من هنا.",

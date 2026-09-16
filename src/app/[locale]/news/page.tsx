@@ -1,5 +1,4 @@
-import { AnimatedSection } from "@/components/motion/AnimatedSection"
-import { PageIntro } from "@/components/ui/PageIntro"
+import { PageShell } from "@/components/layout/PageShell"
 import { getNews } from "@/content"
 import type { AppLocale } from "@/content/types"
 import { Link } from "@/i18n/navigation"
@@ -17,18 +16,22 @@ const NewsPage = async ({ params }: PageProps) => {
   const posts = getNews(locale as AppLocale)
 
   return (
-    <AnimatedSection className="pb-28 pt-20">
-      <PageIntro title={t("news")} />
-      <div className="mx-auto mt-16 max-w-2xl px-6 text-center">
+    <PageShell title={t("news")}>
+      <div className="mx-auto max-w-2xl text-center">
         {posts.length === 0 ? (
-          <p className="text-lg text-ink-muted">{tCommon("noNews")}</p>
+          <p className="rounded-2xl border border-border bg-surface-muted px-6 py-12 text-lg text-ink-muted">
+            {tCommon("noNews")}
+          </p>
         ) : (
-          <ul className="space-y-8 text-start">
+          <ul className="space-y-6 text-start">
             {posts.map((post) => (
-              <li key={post.slug} className="border-b border-ink/8 pb-8">
+              <li
+                key={post.slug}
+                className="rounded-2xl border border-border bg-surface-elevated p-6 shadow-sm transition hover:border-orange/40"
+              >
                 <Link
                   href={`/news/${post.slug}`}
-                  className="text-2xl font-semibold tracking-tight text-ink hover:text-ink-muted"
+                  className="text-2xl font-semibold tracking-tight text-ink transition hover:text-orange"
                 >
                   {post.title}
                 </Link>
@@ -38,7 +41,7 @@ const NewsPage = async ({ params }: PageProps) => {
           </ul>
         )}
       </div>
-    </AnimatedSection>
+    </PageShell>
   )
 }
 

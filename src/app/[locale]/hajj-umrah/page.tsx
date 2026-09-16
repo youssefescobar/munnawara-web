@@ -1,4 +1,6 @@
+import { AnimeReveal } from "@/components/motion/AnimeReveal"
 import { AnimatedSection } from "@/components/motion/AnimatedSection"
+import { CtaSpark } from "@/components/motion/CtaSpark"
 import { Accordion } from "@/components/ui/Accordion"
 import { PageIntro } from "@/components/ui/PageIntro"
 import { getFaq } from "@/content"
@@ -40,28 +42,32 @@ const HajjUmrahPage = async ({ params }: PageProps) => {
             tone="light"
           >
             <div className="mt-8">
-              <Link
-                href="/contact"
-                className="font-label inline-flex rounded-lg bg-orange px-5 py-2.5 text-[15px] font-semibold text-white transition hover:bg-orange-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange"
-              >
-                {tCommon("requestQuote")}
-              </Link>
+              <CtaSpark className="inline-flex">
+                <Link
+                  href="/contact"
+                  className="font-label inline-flex rounded-lg bg-orange px-5 py-2.5 text-[15px] font-semibold text-white transition hover:bg-orange-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange"
+                >
+                  {tCommon("requestQuote")}
+                </Link>
+              </CtaSpark>
             </div>
           </PageIntro>
         </div>
       </section>
 
       <AnimatedSection className="mx-auto max-w-3xl px-6 py-24">
-        <ol className="space-y-12">
+        <AnimeReveal className="space-y-12" stagger={0.14}>
           {steps.map((step, index) => (
-            <li key={step}>
-              <p className="text-sm text-ink-muted">0{index + 1}</p>
+            <div key={step}>
+              <p className="font-label text-sm font-semibold tracking-[0.2em] text-orange uppercase">
+                0{index + 1}
+              </p>
               <p className="mt-2 text-3xl font-semibold tracking-tight text-ink">
                 {step}
               </p>
-            </li>
+            </div>
           ))}
-        </ol>
+        </AnimeReveal>
         <h2 className="mt-24 mb-4 text-3xl font-semibold tracking-tight text-ink">
           {tHajj("faqTitle")}
         </h2>

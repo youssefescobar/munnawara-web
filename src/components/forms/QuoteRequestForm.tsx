@@ -17,7 +17,7 @@ type QuoteRequestFormProps = {
 }
 
 const fieldClass =
-  "w-full min-w-0 rounded-2xl border border-ink/8 bg-surface-muted px-3.5 py-3 text-base text-ink outline-none transition placeholder:text-ink-muted/50 focus:border-orange focus:bg-white focus:ring-2 focus:ring-orange/20 sm:text-sm"
+  "relative z-10 w-full min-w-0 appearance-auto rounded-2xl border border-ink/8 bg-surface-muted px-3.5 py-3 text-base text-ink outline-none transition placeholder:text-ink-muted/50 focus:border-orange focus:bg-white focus:ring-2 focus:ring-orange/20 sm:text-sm"
 
 export const QuoteRequestForm = ({
   className,
@@ -66,7 +66,7 @@ export const QuoteRequestForm = ({
     <div
       id="quote"
       className={cn(
-        "rounded-[1.5rem] border border-ink/6 bg-white p-4 text-start shadow-md sm:rounded-[1.75rem] sm:p-5 md:p-7",
+        "relative z-10 overflow-visible rounded-[1.5rem] border border-ink/6 bg-white p-4 text-start shadow-md sm:rounded-[1.75rem] sm:p-5 md:p-7",
         className,
       )}
     >

@@ -1,6 +1,6 @@
-import { AnimatedSection } from "@/components/motion/AnimatedSection"
-import { PageIntro } from "@/components/ui/PageIntro"
+import { PageShell } from "@/components/layout/PageShell"
 import { TextLink } from "@/components/ui/TextLink"
+import { AnimeReveal } from "@/components/motion/AnimeReveal"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
 type PageProps = {
@@ -21,22 +21,21 @@ const CorporatePage = async ({ params }: PageProps) => {
   ]
 
   return (
-    <AnimatedSection className="pb-28 pt-20">
-      <PageIntro title={t("corporate")} subtitle={tCorporate("intro")} />
-      <ul className="mx-auto mt-16 max-w-2xl px-6">
+    <PageShell title={t("corporate")} subtitle={tCorporate("intro")}>
+      <AnimeReveal className="mx-auto max-w-2xl" stagger={0.1}>
         {services.map((service) => (
-          <li
+          <div
             key={service}
-            className="border-b border-ink/8 py-6 text-2xl font-medium tracking-tight text-ink"
+            className="border-b border-border py-6 text-2xl font-medium tracking-tight text-ink"
           >
             {service}
-          </li>
+          </div>
         ))}
-      </ul>
+      </AnimeReveal>
       <div className="mt-12 text-center">
         <TextLink href="/contact">{tCommon("requestQuote")}</TextLink>
       </div>
-    </AnimatedSection>
+    </PageShell>
   )
 }
 

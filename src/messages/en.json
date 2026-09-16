@@ -17,7 +17,9 @@
     "contact": "Contact",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
-    "switchLanguage": "العربية"
+    "switchLanguage": "العربية",
+    "menuPrimary": "Navigate",
+    "menuMore": "More"
   },
   "common": {
     "learnMore": "Learn more",
@@ -54,10 +56,16 @@
     "contracts": "Recurring institutional contracts"
   },
   "footer": {
-    "tagline": "Trusted transport for pilgrims and institutions",
+    "tagline": "Trusted transport for pilgrims and institutions — arranged with care across the Kingdom.",
     "rights": "All rights reserved",
     "quickLinks": "Quick links",
-    "companies": "Group companies"
+    "companies": "Group companies",
+    "explore": "Explore",
+    "company": "Company",
+    "contact": "Contact",
+    "ctaEyebrow": "Plan your journey",
+    "ctaTitle": "Ready when your group is",
+    "ctaSubtitle": "Request a tailored transport plan for Hajj, Umrah, or institutional travel."
   },
   "home": {
     "headline": "Your journey starts here.",

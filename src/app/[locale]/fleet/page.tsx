@@ -1,5 +1,6 @@
+import { FleetSceneLazy } from "@/components/fleet/FleetSceneLazy"
 import { FleetShowcase } from "@/components/fleet/FleetShowcase"
-import { PageIntro } from "@/components/ui/PageIntro"
+import { PageShell } from "@/components/layout/PageShell"
 import { getFleet } from "@/content"
 import type { AppLocale } from "@/content/types"
 import { getTranslations, setRequestLocale } from "next-intl/server"
@@ -16,12 +17,15 @@ const FleetPage = async ({ params }: PageProps) => {
   const fleet = getFleet(locale as AppLocale)
 
   return (
-    <section className="overflow-hidden pb-24 pt-20">
-      <PageIntro title={t("fleet")} subtitle={tHome("fleetSubtitle")} />
-      <div className="mt-12">
-        <FleetShowcase categories={fleet} />
+    <PageShell title={t("fleet")} subtitle={tHome("fleetSubtitle")}>
+      <div className="mb-12 md:mb-16">
+        <FleetSceneLazy />
+        <p className="font-label mt-3 text-center text-xs text-ink-muted">
+          {tHome("fleetSubtitle")}
+        </p>
       </div>
-    </section>
+      <FleetShowcase categories={fleet} />
+    </PageShell>
   )
 }
 

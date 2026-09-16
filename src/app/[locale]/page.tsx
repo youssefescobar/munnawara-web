@@ -1,11 +1,13 @@
-import { AboutPreview } from "@/components/sections/AboutPreview"
 import { BusPassby } from "@/components/sections/BusPassby"
+import { ClientStrip } from "@/components/sections/ClientStrip"
 import { CTABand } from "@/components/sections/CTABand"
+import { FleetPreview } from "@/components/sections/FleetPreview"
+import { HajjHighlight } from "@/components/sections/HajjHighlight"
 import { Hero } from "@/components/sections/Hero"
-import { HomeFaq } from "@/components/sections/HomeFaq"
+import { HomeQuoteBand } from "@/components/sections/HomeQuoteBand"
 import { HowItWorks } from "@/components/sections/HowItWorks"
-import { NewsTeaser } from "@/components/sections/NewsTeaser"
 import { Testimonials } from "@/components/sections/Testimonials"
+import { TrustBar } from "@/components/sections/TrustBar"
 import { ValueProposition } from "@/components/sections/ValueProposition"
 import { FloatingQuoteCta } from "@/components/layout/FloatingQuoteCta"
 import { setRequestLocale } from "next-intl/server"
@@ -21,13 +23,15 @@ const HomePage = async ({ params }: PageProps) => {
   return (
     <>
       <Hero />
-      <ValueProposition />
+      <HomeQuoteBand />
+      <TrustBar />
       <BusPassby />
+      <ValueProposition />
+      <FleetPreview />
       <HowItWorks />
-      <AboutPreview />
+      <HajjHighlight />
+      <ClientStrip />
       <Testimonials />
-      <NewsTeaser />
-      <HomeFaq />
       <CTABand />
       <FloatingQuoteCta />
     </>

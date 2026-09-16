@@ -71,8 +71,9 @@ const LocaleLayout = async ({ children, params }: LocaleLayoutProps) => {
       lang={locale}
       dir={dir}
       className={`${fontArabic.variable} ${fontLatin.variable} ${fontDisplay.variable} ${fontLabel.variable}`}
+      suppressHydrationWarning
     >
-      <body className="antialiased">
+      <body className="antialiased" suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <SmoothScrollProvider>
             <PageLoader />

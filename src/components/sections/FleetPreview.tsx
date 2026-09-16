@@ -1,4 +1,5 @@
 import { AnimatedSection } from "@/components/motion/AnimatedSection"
+import { AnimeReveal } from "@/components/motion/AnimeReveal"
 import { getFleet } from "@/content"
 import type { AppLocale } from "@/content/types"
 import { Link } from "@/i18n/navigation"
@@ -12,65 +13,51 @@ export const FleetPreview = async () => {
   const fleet = getFleet(locale).slice(0, 3)
 
   return (
-    <AnimatedSection className="bg-surface py-16 md:py-20">
-      <div className="mx-auto flex max-w-[80rem] flex-col items-center justify-between gap-4 px-4 text-center md:flex-row md:px-10 md:text-start">
-        <div>
-          <h2 className="font-display text-3xl font-semibold tracking-tight text-ink md:text-4xl">
+    <AnimatedSection className="bg-ink py-16 text-white md:py-24">
+      <div className="mx-auto flex max-w-[80rem] flex-col gap-6 px-4 md:flex-row md:items-end md:justify-between md:px-10">
+        <div className="max-w-xl">
+          <h2 className="font-display text-3xl font-semibold tracking-tight md:text-5xl">
             {t("fleetTitle")}
           </h2>
-          <p className="mt-3 text-base text-ink-muted md:text-lg">
+          <p className="mt-3 text-base text-white/55 md:text-lg">
             {t("fleetSubtitle")}
           </p>
         </div>
         <Link
           href="/fleet"
-          className="font-label inline-flex rounded-lg border border-orange bg-transparent px-5 py-2.5 text-[15px] font-semibold text-orange transition hover:bg-orange hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange"
+          className="font-label inline-flex w-fit rounded-full bg-orange px-6 py-3 text-[15px] font-semibold text-white transition hover:bg-orange-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
         >
           {tCommon("viewFleet")}
         </Link>
       </div>
-      <div className="mx-auto mt-12 grid max-w-[80rem] gap-6 px-4 md:grid-cols-3 md:px-10">
+
+      <AnimeReveal
+        className="mx-auto mt-10 grid max-w-[80rem] gap-3 px-4 sm:grid-cols-3 sm:gap-4 md:mt-14 md:px-10"
+        stagger={0.1}
+      >
         {fleet.map((item) => (
-          <article
+          <Link
             key={item.id}
-            className="flex flex-col overflow-hidden rounded-lg border border-border bg-surface-elevated shadow-sm"
+            href="/fleet"
+            className="group relative aspect-[3/4] overflow-hidden rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange"
           >
-            <div className="relative aspect-[4/3]">
-              <Image
-                src={item.coverImage}
-                alt={item.name}
-                fill
-                className="object-cover"
-                sizes="(max-width:768px) 100vw, 33vw"
-              />
-            </div>
-            <div className="flex flex-1 flex-col px-5 py-6">
-              <h3 className="text-lg font-semibold tracking-tight text-ink">
-                {item.name}
-              </h3>
-              <p className="font-label mt-1 text-sm text-orange">
+            <Image
+              src={item.coverImage}
+              alt={item.name}
+              fill
+              className="object-cover transition duration-700 group-hover:scale-105"
+              sizes="(max-width:768px) 100vw, 33vw"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/20 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 p-5">
+              <p className="text-lg font-semibold tracking-tight">{item.name}</p>
+              <p className="font-label mt-1 text-sm text-orange-soft">
                 {tCommon("seats")} {item.seatsLabel}
               </p>
-              <ul className="mt-4 flex-1 space-y-1.5 text-sm text-ink-muted">
-                {item.amenities.slice(0, 3).map((amenity) => (
-                  <li key={amenity} className="flex gap-2">
-                    <span className="text-orange" aria-hidden>
-                      ✓
-                    </span>
-                    <span>{amenity}</span>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/fleet"
-                className="font-label mt-5 inline-flex w-full items-center justify-center rounded-lg border border-border bg-surface-muted px-4 py-2.5 text-sm font-semibold text-ink transition hover:border-orange hover:bg-secondary-container focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange"
-              >
-                {tCommon("learnMore")}
-              </Link>
             </div>
-          </article>
+          </Link>
         ))}
-      </div>
+      </AnimeReveal>
     </AnimatedSection>
   )
 }

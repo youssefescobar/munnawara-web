@@ -1,9 +1,8 @@
 import { AnimatedSection } from "@/components/motion/AnimatedSection"
-import { TextLink } from "@/components/ui/TextLink"
+import { CompanyCardsGrid } from "@/components/sections/CompanyCardsGrid"
 import { getCompanies } from "@/content"
 import type { AppLocale } from "@/content/types"
 import { getLocale, getTranslations } from "next-intl/server"
-import Image from "next/image"
 
 export const CompanyCards = async () => {
   const t = await getTranslations("home")
@@ -21,36 +20,16 @@ export const CompanyCards = async () => {
           {t("companiesSubtitle")}
         </p>
       </div>
-      <div className="mx-auto mt-12 grid max-w-[80rem] gap-5 px-4 sm:grid-cols-2 md:px-10 lg:grid-cols-4">
-        {companies.map((company) => (
-          <article
-            key={company.slug}
-            className="group flex flex-col overflow-hidden rounded-lg border border-border bg-surface-elevated shadow-sm transition hover:shadow-md"
-          >
-            <div className="relative aspect-[16/11]">
-              <Image
-                src={company.heroImage}
-                alt=""
-                fill
-                className="object-cover transition duration-700 group-hover:scale-[1.03]"
-                sizes="(max-width:768px) 100vw, 25vw"
-              />
-            </div>
-            <div className="flex flex-1 flex-col border-t-2 border-orange px-5 py-6">
-              <h3 className="text-lg font-semibold tracking-tight text-ink">
-                {company.name}
-              </h3>
-              <p className="mt-2 flex-1 text-sm leading-relaxed text-ink-muted">
-                {company.summary ?? tCommon("contentPending")}
-              </p>
-              <div className="mt-4">
-                <TextLink href={`/companies/${company.slug}`}>
-                  {tCommon("learnMore")}
-                </TextLink>
-              </div>
-            </div>
-          </article>
-        ))}
+      <div className="mx-auto max-w-[80rem] px-4 md:px-10">
+        <CompanyCardsGrid
+          companies={companies.map((company) => ({
+            slug: company.slug,
+            name: company.name,
+            summary: company.summary ?? tCommon("contentPending"),
+            heroImage: company.heroImage,
+            learnMore: tCommon("learnMore"),
+          }))}
+        />
       </div>
     </AnimatedSection>
   )

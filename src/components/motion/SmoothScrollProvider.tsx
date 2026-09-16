@@ -37,6 +37,8 @@ export const SmoothScrollProvider = ({
     gsap.ticker.add(handleTick)
     gsap.ticker.lagSmoothing(0)
 
+    requestAnimationFrame(() => ScrollTrigger.refresh())
+
     return () => {
       gsap.ticker.remove(handleTick)
       lenis.destroy()
