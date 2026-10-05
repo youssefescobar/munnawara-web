@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/cn"
 import {
+  Fragment,
   useCallback,
   useEffect,
   useId,
@@ -167,7 +168,7 @@ function Popover({
 /* Dropdown                                                                    */
 /* -------------------------------------------------------------------------- */
 
-export type DropdownOption = { id: string; label: string; hint?: string }
+export type DropdownOption = { id: string; label: string; hint?: string; group?: string }
 
 export function Dropdown({
   id,
@@ -295,9 +296,18 @@ export function Dropdown({
         ) : (
           options.map((o, i) => {
             const selected = o.id === value
+            const header = o.group && o.group !== options[i - 1]?.group ? o.group : null
             return (
+              <Fragment key={o.id}>
+              {header ? (
+                <p
+                  role="presentation"
+                  className="font-label px-3 pt-2.5 pb-1 text-[0.65rem] font-semibold tracking-[0.14em] text-ink-muted uppercase rtl:tracking-normal"
+                >
+                  {header}
+                </p>
+              ) : null}
               <div
-                key={o.id}
                 id={`${listId}-${i}`}
                 role="option"
                 aria-selected={selected}
@@ -322,6 +332,7 @@ export function Dropdown({
                   </svg>
                 ) : null}
               </div>
+              </Fragment>
             )
           })
         )}

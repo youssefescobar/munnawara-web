@@ -1,22 +1,16 @@
 import type { BusClass, TripType } from "@/components/forms/formSchemas"
 import { cn } from "@/lib/cn"
 import {
-  airports,
   busClassOptions,
   customerOptions,
-  dawraLengths,
-  defaultZiyarat,
-  extraOptions,
+  placeGroupLabels,
   places,
-  tripDirections,
-  umrahKinds,
-  ziyaratOptions,
   type Option,
 } from "./quoteWizardConfig"
 import { DatePicker, NumberStepper, TimePicker } from "./QuoteFields"
 import { COPY } from "./quoteWizardCopy"
 import type { SummaryRow, Tx } from "./quoteWizardLogic"
-import type { StepId, WizardState } from "./quoteWizardTypes"
+import { MAX_LEGS, emptyLeg, type Leg, type StepId, type WizardState } from "./quoteWizardTypes"
 import { Choices, Field, PlaceSelect, fieldClass, fieldErrorRing } from "./quoteWizardUi"
 
 export type StepBodyProps = {
@@ -48,8 +42,6 @@ export function StepBody({
   todayISO,
   summaryRows,
 }: StepBodyProps) {
-  const twoWay = state.direction === "twoway"
-  const isLongDawra = state.dawraLength === "long"
   const inputErr = (key: string) => (errors[key] ? fieldErrorRing : "")
 
   switch (step) {
@@ -75,247 +67,100 @@ export function StepBody({
           options={serviceOptions}
           value={state.service}
           locale={locale}
-          onPick={(id) => patch({ service: id, umrahKind: "", dawraLength: "" })}
+          onPick={(id) => patch({ service: id })}
         />
       )
-    case "umrahKind":
+    case "route": {
+      const placeOptions = places.map((p) => ({
+        ...p,
+        group: tx(placeGroupLabels[p.group]),
+      }))
+      const setLeg = (i: number, change: Partial<Leg>) => {
+        const legs = state.legs.map((leg, j) => (j === i ? { ...leg, ...change } : leg))
+        // Keep the chain: the next leg starts where this one ends (unless the user changed it).
+        const next = legs[i + 1]
+        if (change.to !== undefined && next && (!next.from || next.from === state.legs[i].to)) {
+          legs[i + 1] = { ...next, from: change.to }
+        }
+        patch({ legs })
+      }
       return (
-        <Choices
-          options={umrahKinds}
-          value={state.umrahKind}
-          locale={locale}
-          onPick={(id) => patch({ umrahKind: id })}
-        />
-      )
-    case "dawraLength":
-      return (
-        <Choices
-          options={dawraLengths}
-          value={state.dawraLength}
-          locale={locale}
-          onPick={(id) =>
-            patch({ dawraLength: id, mazarat: id === "long" ? defaultZiyarat() : [] })
-          }
-        />
-      )
-    case "dawraRoute":
-      return (
-        <div className="space-y-4">
-          <div className="grid grid-cols-1 gap-3.5 @lg:grid-cols-2">
-            <Field label={tx(COPY.fields.arrival)} htmlFor="qw-arrival">
-              <PlaceSelect
-                id="qw-arrival"
-                value={state.arrival}
-                options={airports}
-                locale={locale}
-                placeholder=""
-                onChange={(v) => v && patch({ arrival: v })}
-              />
-            </Field>
-            <Field label={tx(COPY.fields.departure)} htmlFor="qw-departure">
-              <PlaceSelect
-                id="qw-departure"
-                value={state.departure}
-                options={airports}
-                locale={locale}
-                placeholder=""
-                onChange={(v) => v && patch({ departure: v })}
-              />
-            </Field>
-          </div>
-          {isLongDawra ? (
-            <fieldset className="space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <legend className="font-label text-[0.7rem] font-semibold tracking-[0.14em] text-ink-muted uppercase">
-                  {tx(COPY.ziyaratTitle)}
-                </legend>
-                <div className="flex gap-1 text-xs font-semibold text-orange">
-                  <button
-                    type="button"
-                    className="rounded-md px-2 py-1 hover:underline"
-                    onClick={() => patch({ mazarat: ziyaratOptions.map((z) => z.id) })}
-                  >
-                    {tx(COPY.selectAll)}
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-md px-2 py-1 hover:underline"
-                    onClick={() => patch({ mazarat: [] })}
-                  >
-                    {tx(COPY.selectNone)}
-                  </button>
-                </div>
-              </div>
-              {(["makkah", "madinah"] as const).map((city) => (
-                <div key={city}>
-                  <p className="mb-2 text-sm font-semibold text-ink">
-                    {tx(city === "makkah" ? COPY.cityMakkah : COPY.cityMadinah)}
+        <div className="space-y-5">
+          {state.legs.map((leg, i) => (
+            <div key={i} className="space-y-3 rounded-2xl bg-surface-muted/50 p-3.5">
+              {state.legs.length > 1 ? (
+                <div className="flex items-center justify-between gap-2">
+                  <p className="font-label text-[0.7rem] font-semibold tracking-[0.14em] text-orange uppercase rtl:tracking-normal">
+                    {tx(COPY.legTitle(i + 1))}
                   </p>
-                  <div className="flex flex-wrap gap-2">
-                    {ziyaratOptions
-                      .filter((z) => z.city === city)
-                      .map((o) => {
-                        const on = state.mazarat.includes(o.id)
-                        return (
-                          <button
-                            key={o.id}
-                            type="button"
-                            aria-pressed={on}
-                            onClick={() =>
-                              patch({
-                                mazarat: on
-                                  ? state.mazarat.filter((m) => m !== o.id)
-                                  : [...state.mazarat, o.id],
-                              })
-                            }
-                            className={cn(
-                              "rounded-full px-3.5 py-2 text-sm transition",
-                              on
-                                ? "bg-orange/15 text-ink ring-2 ring-orange"
-                                : "bg-surface-muted text-ink ring-1 ring-transparent hover:bg-surface-container",
-                            )}
-                          >
-                            {tx(o.label)}
-                          </button>
-                        )
-                      })}
-                  </div>
+                  {i > 0 ? (
+                    <button
+                      type="button"
+                      className="rounded-md px-2 py-1 text-xs font-semibold text-ink-muted hover:text-ink hover:underline"
+                      onClick={() => patch({ legs: state.legs.filter((_, j) => j !== i) })}
+                    >
+                      {tx(COPY.removeLeg)}
+                    </button>
+                  ) : null}
                 </div>
-              ))}
-            </fieldset>
-          ) : null}
-        </div>
-      )
-    case "maktaaRoute":
-      return (
-        <div className="space-y-4">
-          <Choices
-            options={tripDirections}
-            value={state.direction}
-            locale={locale}
-            onPick={(id) => patch({ direction: id })}
-          />
-          <div className="grid grid-cols-1 gap-3.5 @lg:grid-cols-2">
-            <Field label={tx(COPY.fields.from)} htmlFor="qw-from" error={errors.from}>
-              <PlaceSelect
-                id="qw-from"
-                value={state.from}
-                options={places}
-                locale={locale}
-                placeholder={tx(COPY.pickPlace)}
-                error={errors.from}
-                onChange={(v) => patch({ from: v })}
-              />
-            </Field>
-            <Field label={tx(COPY.fields.to)} htmlFor="qw-to" error={errors.to}>
-              <PlaceSelect
-                id="qw-to"
-                value={state.to}
-                options={places}
-                locale={locale}
-                placeholder={tx(COPY.pickPlace)}
-                error={errors.to}
-                onChange={(v) => patch({ to: v })}
-              />
-            </Field>
-          </div>
-        </div>
-      )
-    case "charterRoute":
-      return (
-        <div className="grid grid-cols-1 gap-3.5 @lg:grid-cols-2">
-          <Field label={tx(COPY.fields.pickup)} htmlFor="qw-pickup" error={errors.pickup}>
-            <input
-              id="qw-pickup"
-              name="pickup"
-              className={cn(fieldClass, inputErr("pickup"))}
-              value={state.pickup}
-              onChange={(e) => patch({ pickup: e.target.value })}
-            />
-          </Field>
-          <Field
-            label={tx(COPY.fields.destination)}
-            htmlFor="qw-destination"
-            error={errors.destination}
+              ) : null}
+              {/* DOM order From, To, Date, Time: the page direction puts From on the right in Arabic. */}
+              <div className="grid grid-cols-1 gap-3.5 @lg:grid-cols-2">
+                <Field label={tx(COPY.fields.from)} htmlFor={`qw-from-${i}`} error={errors[`from${i}`]}>
+                  <PlaceSelect
+                    id={`qw-from-${i}`}
+                    value={leg.from}
+                    options={placeOptions}
+                    locale={locale}
+                    placeholder={tx(COPY.pickPlace)}
+                    error={errors[`from${i}`]}
+                    onChange={(v) => setLeg(i, { from: v })}
+                  />
+                </Field>
+                <Field label={tx(COPY.fields.to)} htmlFor={`qw-to-${i}`} error={errors[`to${i}`]}>
+                  <PlaceSelect
+                    id={`qw-to-${i}`}
+                    value={leg.to}
+                    options={placeOptions}
+                    locale={locale}
+                    placeholder={tx(COPY.pickPlace)}
+                    error={errors[`to${i}`]}
+                    onChange={(v) => setLeg(i, { to: v })}
+                  />
+                </Field>
+                <Field label={tx(COPY.fields.date)} htmlFor={`qw-date-${i}`} error={errors[`date${i}`]}>
+                  <DatePicker
+                    id={`qw-date-${i}`}
+                    locale={locale}
+                    value={leg.date}
+                    min={state.legs[i - 1]?.date || todayISO}
+                    placeholder={tx(COPY.pickDate)}
+                    error={errors[`date${i}`]}
+                    onChange={(v) => setLeg(i, { date: v })}
+                  />
+                </Field>
+                <Field label={tx(COPY.fields.time)} htmlFor={`qw-time-${i}`} error={errors[`time${i}`]}>
+                  <TimePicker
+                    id={`qw-time-${i}`}
+                    locale={locale}
+                    value={leg.time}
+                    placeholder={tx(COPY.pickTime)}
+                    error={errors[`time${i}`]}
+                    onChange={(v) => setLeg(i, { time: v })}
+                  />
+                </Field>
+              </div>
+            </div>
+          ))}
+          <button
+            type="button"
+            disabled={state.legs.length >= MAX_LEGS}
+            className="font-label inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-orange ring-1 ring-orange/40 transition hover:bg-orange/10 disabled:cursor-not-allowed disabled:opacity-45"
+            onClick={() => patch({ legs: [...state.legs, emptyLeg(state.legs[state.legs.length - 1])] })}
           >
-            <input
-              id="qw-destination"
-              name="destination"
-              className={cn(fieldClass, inputErr("destination"))}
-              value={state.destination}
-              onChange={(e) => patch({ destination: e.target.value })}
-            />
-          </Field>
-          <Field
-            label={tx(COPY.fields.stops)}
-            htmlFor="qw-stops"
-            className="@lg:col-span-2"
-          >
-            <input
-              id="qw-stops"
-              name="stops"
-              className={fieldClass}
-              value={state.stops}
-              onChange={(e) => patch({ stops: e.target.value })}
-            />
-          </Field>
-        </div>
-      )
-    case "when": {
-      const returnRequired = state.umrahKind === "maktaa" && twoWay
-      return (
-        <div className="grid grid-cols-1 gap-3.5 @lg:grid-cols-2">
-          <Field label={tx(COPY.fields.date)} htmlFor="qw-date" error={errors.date}>
-            <DatePicker
-              id="qw-date"
-              locale={locale}
-              value={state.date}
-              min={todayISO}
-              placeholder={tx(COPY.pickDate)}
-              error={errors.date}
-              onChange={(v) => patch({ date: v })}
-            />
-          </Field>
-          <Field label={tx(COPY.fields.time)} htmlFor="qw-time" error={errors.time}>
-            <TimePicker
-              id="qw-time"
-              locale={locale}
-              value={state.time}
-              placeholder={tx(COPY.pickTime)}
-              error={errors.time}
-              onChange={(v) => patch({ time: v })}
-            />
-          </Field>
-          <Field
-            label={tx(
-              returnRequired ? COPY.fields.returnDate : COPY.fields.returnDateOptional,
-            )}
-            htmlFor="qw-return"
-            error={errors.returnDate}
-          >
-            <DatePicker
-              id="qw-return"
-              locale={locale}
-              value={state.returnDate}
-              min={state.date || todayISO}
-              placeholder={tx(COPY.pickDate)}
-              error={errors.returnDate}
-              onChange={(v) => patch({ returnDate: v })}
-            />
-          </Field>
-          {state.service !== "umrah" ? (
-            <Field label={tx(COPY.fields.waiting)} htmlFor="qw-waiting">
-              <NumberStepper
-                id="qw-waiting"
-                locale={locale}
-                min={0}
-                max={168}
-                placeholder="0"
-                value={state.waitingHours}
-                onChange={(v) => patch({ waitingHours: v })}
-              />
-            </Field>
-          ) : null}
+            <span aria-hidden="true">+</span>
+            {tx(COPY.addLeg)}
+          </button>
         </div>
       )
     }
@@ -391,25 +236,6 @@ export function StepBody({
     case "extras":
       return (
         <div className="space-y-4">
-          <div className="grid grid-cols-1 gap-2.5 @lg:grid-cols-2">
-            {extraOptions.map((o) => (
-              <label
-                key={o.id}
-                className="flex cursor-pointer items-center gap-3 rounded-xl bg-surface-muted px-3.5 py-3 text-sm text-ink/80"
-              >
-                <input
-                  type="checkbox"
-                  name={`extra-${o.id}`}
-                  className="qw-check"
-                  checked={state.extras[o.id]}
-                  onChange={(e) =>
-                    patch({ extras: { ...state.extras, [o.id]: e.target.checked } })
-                  }
-                />
-                {tx(o.label)}
-              </label>
-            ))}
-          </div>
           <Field label={tx(COPY.fields.notes)} htmlFor="qw-notes">
             <textarea
               id="qw-notes"

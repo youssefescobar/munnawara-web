@@ -6,15 +6,7 @@ import { useReducedMotion } from "@/hooks/useReducedMotion"
 import { cn } from "@/lib/cn"
 import { useLocale } from "next-intl"
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react"
-import {
-  charterService,
-  corporateServices,
-  orgRequired,
-  pick,
-  umrahService,
-  type L10n,
-  type Option,
-} from "./quoteWizardConfig"
+import { corporateServices, orgRequired, pick, type L10n, type Option } from "./quoteWizardConfig"
 import dynamic from "next/dynamic"
 import { GlobeVisual } from "./QuoteVisuals"
 import { COPY } from "./quoteWizardCopy"
@@ -68,10 +60,7 @@ export const QuoteWizard = ({
   const isCompany = state.customer === "company"
   const needsOrg = state.customer !== "" && orgRequired.includes(state.customer)
 
-  const steps = useMemo<StepId[]>(
-    () => computeSteps(state.service, state.umrahKind),
-    [state.service, state.umrahKind],
-  )
+  const steps = useMemo<StepId[]>(() => computeSteps(isCompany), [isCompany])
 
   // Bring the first validation message into view (e.g. consent below the fold on phones).
   useEffect(() => {
@@ -84,14 +73,12 @@ export const QuoteWizard = ({
   const stepIndexSafe = Math.min(stepIndex, steps.length - 1)
   const step = steps[stepIndexSafe]
 
-  const serviceOptions: readonly Option[] = isCompany
-    ? corporateServices
-    : [umrahService, charterService]
+  const serviceOptions: readonly Option[] = corporateServices
 
   /* ---- derived trip data ---- */
 
   const todayISO = getTodayISO()
-  const mapView = () => getMapView(step, state)
+  const mapView = () => getMapView(state)
   const finalStops = () => getFinalStops(state)
   const serviceType = getServiceType(state, isCompany)
   const summaryRows = () => buildSummaryRows(state, locale, serviceOptions, tx)
@@ -263,11 +250,7 @@ export const QuoteWizard = ({
   /* ---- step bodies ---- */
 
   const showGlobe = step === "customer" || step === "service"
-  const showRoute =
-    step === "umrahKind" ||
-    step === "dawraLength" ||
-    step === "dawraRoute" ||
-    step === "maktaaRoute"
+  const showRoute = step === "route"
 
   const mapData = showRoute && !split ? mapView() : null
 
@@ -289,18 +272,8 @@ export const QuoteWizard = ({
   )
 
   const isLast = stepIndexSafe === steps.length - 1
-  const isChoiceStep =
-    step === "customer" || step === "service" || step === "umrahKind" || step === "dawraLength"
-  const choiceValue =
-    step === "customer"
-      ? state.customer
-      : step === "service"
-        ? state.service
-        : step === "umrahKind"
-          ? state.umrahKind
-          : step === "dawraLength"
-            ? state.dawraLength
-            : ""
+  const isChoiceStep = step === "customer" || step === "service"
+  const choiceValue = step === "customer" ? state.customer : step === "service" ? state.service : ""
   const showContinue = !isChoiceStep || Boolean(choiceValue)
   const stepName = tx(COPY.stepNames[step])
   const stepLabel = tx(COPY.stepOf(stepIndexSafe + 1, steps.length, stepName))

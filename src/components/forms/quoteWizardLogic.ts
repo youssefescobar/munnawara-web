@@ -1,18 +1,10 @@
 import {
   allHubStops,
-  buildDawraStops,
   buildTransferStops,
   busClassOptions,
   customerOptions,
-  dawraLengths,
-  extraOptions,
   findOption,
-  pick,
   placeLabel,
-  tripDirections,
-  umrahKinds,
-  umrahService,
-  ziyaratOptions,
   type L10n,
   type MapStop,
   type Option,
@@ -25,16 +17,10 @@ export type Tx = (text: L10n) => string
 export type MapView = { stops: MapStop[]; context: MapStop[] }
 export type SummaryRow = { id: StepId; label: L10n; value: string }
 
-export function computeSteps(service: string, umrahKind: string): StepId[] {
-  const list: StepId[] = ["customer", "service"]
-  if (service === "umrah") {
-    list.push("umrahKind")
-    if (umrahKind === "dawra") list.push("dawraLength", "dawraRoute")
-    else if (umrahKind === "maktaa") list.push("maktaaRoute")
-  } else if (service) {
-    list.push("charterRoute")
-  }
-  list.push("when", "passengers", "vehicle", "extras", "contact", "review")
+export function computeSteps(isCompany: boolean): StepId[] {
+  const list: StepId[] = ["customer"]
+  if (isCompany) list.push("service")
+  list.push("route", "passengers", "vehicle", "extras", "contact", "review")
   return list
 }
 
@@ -43,56 +29,32 @@ export function getTodayISO(): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`
 }
 
-/** Stops drawn on the map for the current step, plus faint context markers. */
-export function getMapView(step: StepId, state: WizardState): MapView {
-  const isLongDawra = state.dawraLength === "long"
-  if (step === "dawraLength") {
-    return { stops: buildDawraStops(state.arrival, state.departure, [], false), context: [] }
+const legPlaces = (state: WizardState): PlaceId[] => {
+  const ids: PlaceId[] = []
+  state.legs.forEach((leg, i) => {
+    if (i === 0 && leg.from) ids.push(leg.from)
+    if (leg.to) ids.push(leg.to)
+  })
+  return ids
+}
+
+/** Stops drawn on the map: the chosen places in order, or faint hubs while empty. */
+export function getMapView(state: WizardState): MapView {
+  const ids = legPlaces(state)
+  return {
+    stops: buildTransferStops(ids),
+    context: ids.length < 2 ? allHubStops().filter((h) => !ids.includes(h.id as PlaceId)) : [],
   }
-  if (step === "dawraRoute") {
-    const stops = buildDawraStops(state.arrival, state.departure, state.mazarat, isLongDawra)
-    const context: MapStop[] = isLongDawra
-      ? ziyaratOptions
-          .filter((z) => !state.mazarat.includes(z.id))
-          .map((z) => ({ id: z.id, lat: z.lat, lng: z.lng, label: z.label, kind: "ziyarat" as const }))
-      : []
-    return { stops, context }
-  }
-  if (step === "maktaaRoute") {
-    const chosen = [state.from, state.to].filter(Boolean) as PlaceId[]
-    return {
-      stops: buildTransferStops(chosen),
-      context: chosen.length < 2 ? allHubStops().filter((h) => !chosen.includes(h.id as PlaceId)) : [],
-    }
-  }
-  const laterSteps: readonly StepId[] = ["when", "passengers", "vehicle", "extras", "contact", "review"]
-  if (laterSteps.includes(step)) {
-    const finalRoute = getFinalStops(state)
-    if (finalRoute.length > 1) return { stops: finalRoute, context: [] }
-  }
-  return { stops: [], context: allHubStops() }
 }
 
 /** Final route for the confirmation map. */
 export function getFinalStops(state: WizardState): MapStop[] {
-  const isLongDawra = state.dawraLength === "long"
-  if (state.umrahKind === "dawra") {
-    return buildDawraStops(state.arrival, state.departure, state.mazarat, isLongDawra)
-  }
-  if (state.umrahKind === "maktaa" && state.from && state.to) {
-    return buildTransferStops([state.from, state.to])
-  }
-  return []
+  const ids = legPlaces(state)
+  return ids.length > 1 ? buildTransferStops(ids) : []
 }
 
 export function getServiceType(state: WizardState, isCompany: boolean): string {
-  return state.service === "umrah"
-    ? state.umrahKind === "dawra"
-      ? `umrah_dawra_${state.dawraLength || "short"}`
-      : `umrah_maktaa_${state.direction}`
-    : isCompany && state.service
-      ? `company_${state.service}`
-      : "charter"
+  return isCompany && state.service ? `company_${state.service}` : `route_${state.legs.length}leg`
 }
 
 export function getServiceLabel(
@@ -100,47 +62,21 @@ export function getServiceLabel(
   serviceOptions: readonly Option[],
   tx: Tx,
 ): string {
-  if (state.service === "umrah") {
-    const kind = findOption(umrahKinds, state.umrahKind)
-    const parts = [tx(umrahService.label)]
-    if (kind) parts.push(tx(kind.label))
-    if (state.umrahKind === "dawra") {
-      const len = findOption(dawraLengths, state.dawraLength)
-      if (len) parts.push(tx(len.label))
-    } else if (state.umrahKind === "maktaa") {
-      const d = findOption(tripDirections, state.direction)
-      if (d) parts.push(tx(d.label))
-    }
-    return parts.join(" · ")
-  }
   const o = findOption(serviceOptions, state.service)
   return o ? tx(o.label) : ""
 }
 
+const arrowFor = (loc: string) => (loc === "ar" ? " ← " : " → ")
+
 /** Route text in the language given (English for the sales payload). */
 export function getRouteParts(state: WizardState, loc: string) {
-  const isLongDawra = state.dawraLength === "long"
-  if (state.service === "umrah" && state.umrahKind === "dawra") {
-    const mid = buildDawraStops(state.arrival, state.departure, state.mazarat, isLongDawra)
-      .slice(1, -1)
-      .map((s) => pick(s.label, loc))
-    return {
-      pickup: placeLabel(state.arrival, loc),
-      destination: placeLabel(state.departure, loc),
-      stops: mid.join(loc === "ar" ? " ← " : " → "),
-    }
-  }
-  if (state.service === "umrah") {
-    return {
-      pickup: state.from ? placeLabel(state.from, loc) : "",
-      destination: state.to ? placeLabel(state.to, loc) : "",
-      stops: "",
-    }
-  }
+  const first = state.legs[0]
+  const last = state.legs[state.legs.length - 1]
+  const mid = state.legs.slice(0, -1).map((leg) => (leg.to ? placeLabel(leg.to, loc) : ""))
   return {
-    pickup: state.pickup.trim(),
-    destination: state.destination.trim(),
-    stops: state.stops.trim(),
+    pickup: first?.from ? placeLabel(first.from, loc) : "",
+    destination: last?.to ? placeLabel(last.to, loc) : "",
+    stops: mid.filter(Boolean).join(arrowFor(loc)),
   }
 }
 
@@ -150,7 +86,6 @@ export function validateStep(
   tx: Tx,
   needsOrg: boolean,
 ): Record<string, string> {
-  const twoWay = state.direction === "twoway"
   const e: Record<string, string> = {}
   switch (id) {
     case "customer":
@@ -159,32 +94,22 @@ export function validateStep(
     case "service":
       if (!state.service) e.choice = tx(COPY.errors.choose)
       break
-    case "umrahKind":
-      if (!state.umrahKind) e.choice = tx(COPY.errors.choose)
-      break
-    case "dawraLength":
-      if (!state.dawraLength) e.choice = tx(COPY.errors.choose)
-      break
-    case "maktaaRoute":
-      if (!state.from) e.from = tx(COPY.errors.place)
-      if (!state.to) e.to = tx(COPY.errors.place)
-      if (state.from && state.to && state.from === state.to) {
-        e.to = tx(COPY.errors.samePlace)
-      }
-      break
-    case "charterRoute":
-      if (state.pickup.trim().length < 2) e.pickup = tx(COPY.errors.place)
-      if (state.destination.trim().length < 2) e.destination = tx(COPY.errors.place)
-      break
-    case "when":
-      if (!state.date) e.date = tx(COPY.errors.date)
-      if (state.umrahKind === "maktaa" && !state.time) e.time = tx(COPY.errors.time)
-      if (state.umrahKind === "maktaa" && twoWay && !state.returnDate) {
-        e.returnDate = tx(COPY.errors.returnDate)
-      }
-      if (state.date && state.returnDate && state.returnDate < state.date) {
-        e.returnDate = tx(COPY.errors.returnBefore)
-      }
+    case "route":
+      state.legs.forEach((leg, i) => {
+        if (!leg.from) e[`from${i}`] = tx(COPY.errors.place)
+        if (!leg.to) e[`to${i}`] = tx(COPY.errors.place)
+        if (leg.from && leg.from === leg.to) e[`to${i}`] = tx(COPY.errors.samePlace)
+        if (!leg.date) e[`date${i}`] = tx(COPY.errors.date)
+        if (!leg.time) e[`time${i}`] = tx(COPY.errors.time)
+        const prev = state.legs[i - 1]
+        if (
+          prev?.date &&
+          leg.date &&
+          `${leg.date}T${leg.time || "00:00"}` < `${prev.date}T${prev.time || "00:00"}`
+        ) {
+          e[`date${i}`] = tx(COPY.errors.returnBefore)
+        }
+      })
       break
     case "passengers":
       if (!Number(state.passengers) || Number(state.passengers) < 1) {
@@ -213,6 +138,15 @@ export function validateStep(
   return e
 }
 
+/** Whole itinerary as one line per leg, for the sales team (English). */
+const itineraryText = (state: WizardState) =>
+  state.legs
+    .map(
+      (leg, i) =>
+        `${i + 1}) ${placeLabel(leg.from, "en")} -> ${placeLabel(leg.to, "en")} ${leg.date} ${leg.time}`.trim(),
+    )
+    .join(" | ")
+
 export function buildQuotePayload(
   state: WizardState,
   serviceType: string,
@@ -220,6 +154,9 @@ export function buildQuotePayload(
   honeypot: string,
 ) {
   const route = getRouteParts(state, "en")
+  const first = state.legs[0]
+  const last = state.legs[state.legs.length - 1]
+  const itinerary = state.legs.length > 1 ? `Itinerary: ${itineraryText(state)}` : ""
   return {
     tripType: state.customer || undefined,
     serviceType,
@@ -230,17 +167,15 @@ export function buildQuotePayload(
     pickup: route.pickup,
     destination: route.destination,
     stops: route.stops,
-    date: state.date,
-    departureTime: state.time,
-    returnDate: state.returnDate,
-    waitingHours: state.waitingHours === "" ? null : Number(state.waitingHours),
+    date: first.date,
+    departureTime: first.time,
+    returnDate: state.legs.length > 1 ? last.date : "",
     passengers: Number(state.passengers),
     busCount: Number(state.busCount) || 1,
     busClass: state.busClass,
     accessibilityNeeds: state.accessibility,
     luggageNotes: state.luggage,
-    specialRequirements: state.notes,
-    ...state.extras,
+    specialRequirements: [itinerary, state.notes.trim()].filter(Boolean).join("\n"),
     consent: state.consent,
     language: isAr ? ("ar" as const) : ("en" as const),
     companyWebsite: honeypot,
@@ -253,7 +188,6 @@ export function buildSummaryRows(
   serviceOptions: readonly Option[],
   tx: Tx,
 ): SummaryRow[] {
-  const route = getRouteParts(state, locale)
   const customer = findOption(customerOptions, state.customer)
   const tag = locale === "ar" ? "ar-SA-u-ca-gregory-nu-latn" : "en-GB"
   const fmtDate = (iso: string) => {
@@ -273,31 +207,23 @@ export function buildSummaryRows(
       new Date(2000, 0, 1, Number(m[1]), Number(m[2])),
     )
   }
-  const dateLine = [state.date ? fmtDate(state.date) : "", state.time ? fmtTime(state.time) : ""]
-    .filter(Boolean)
-    .join(" · ")
-  const arrow = locale === "ar" ? " ← " : " → "
-  const when = state.returnDate ? `${dateLine}${arrow}${fmtDate(state.returnDate)}` : dateLine
-  const extras = [
-    ...extraOptions.filter((o) => state.extras[o.id]).map((o) => tx(o.label)),
-  ]
-  const routeText = [route.pickup, route.stops, route.destination]
-    .filter(Boolean)
-    .join(arrow)
+  const arrow = arrowFor(locale)
+  const legRows: SummaryRow[] = state.legs.map((leg, i) => ({
+    id: "route",
+    label: state.legs.length > 1 ? COPY.summary.leg(i + 1) : COPY.summary.route,
+    value: [
+      [leg.from && placeLabel(leg.from, locale), leg.to && placeLabel(leg.to, locale)]
+        .filter(Boolean)
+        .join(arrow),
+      [leg.date && fmtDate(leg.date), leg.time && fmtTime(leg.time)].filter(Boolean).join(" · "),
+    ]
+      .filter(Boolean)
+      .join(" · "),
+  }))
   const rows: SummaryRow[] = [
     { id: "customer", label: COPY.summary.who, value: customer ? tx(customer.label) : "" },
     { id: "service", label: COPY.summary.service, value: getServiceLabel(state, serviceOptions, tx) },
-    {
-      id:
-        state.service === "umrah"
-          ? state.umrahKind === "dawra"
-            ? "dawraRoute"
-            : "maktaaRoute"
-          : "charterRoute",
-      label: COPY.summary.route,
-      value: routeText,
-    },
-    { id: "when", label: COPY.summary.when, value: when },
+    ...legRows,
     {
       id: "passengers",
       label: COPY.summary.passengers,
@@ -308,8 +234,8 @@ export function buildSummaryRows(
       label: COPY.summary.vehicle,
       value: `${state.busCount} × ${tx(findOption(busClassOptions, state.busClass)!.label)}`,
     },
-    ...(extras.length
-      ? [{ id: "extras" as StepId, label: COPY.summary.extras, value: extras.join(", ") }]
+    ...(state.notes.trim()
+      ? [{ id: "extras" as StepId, label: COPY.summary.extras, value: state.notes.trim() }]
       : []),
     {
       id: "contact",

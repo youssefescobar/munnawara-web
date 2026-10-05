@@ -165,7 +165,7 @@ export function PlaceSelect({
   id: string
   value: string
   onChange: (v: PlaceId | "") => void
-  options: readonly Option<PlaceId>[]
+  options: readonly (Option<PlaceId> & { group?: string })[]
   locale: string
   placeholder: string
   error?: string
@@ -177,7 +177,7 @@ export function PlaceSelect({
       locale={locale}
       placeholder={placeholder}
       error={error}
-      options={options.map((o) => ({ id: o.id, label: pick(o.label, locale) }))}
+      options={options.map((o) => ({ id: o.id, label: pick(o.label, locale), group: o.group }))}
       onChange={(v) => onChange(v as PlaceId | "")}
     />
   )
