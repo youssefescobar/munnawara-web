@@ -1595,7 +1595,7 @@ a[data-whatsapp-fab] {
 }
 
 .loader-status {
-  top: calc(50% + min(5vh, 32px));
+  top: calc(50% + min(34vh, 255px));
   display: flex;
   gap: 0.28em;
   color: rgba(245, 239, 232, 0.55);
@@ -1668,47 +1668,51 @@ html[dir='rtl'] .loader-status__bar::after {
 }
 
 .loader-brand {
-  top: calc(50% + min(17vh, 115px));
+  top: calc(50% + min(11vh, 82px));
   display: flex;
   flex-wrap: wrap;
-  gap: 0.2em 0.42em;
+  align-items: baseline;
+  gap: 0.35em 0.6em;
   justify-content: center;
-  width: min(92vw, 960px);
-  color: #f5efe8;
-  font-size: clamp(1.125rem, 2.4vw, 1.75rem);
+  width: min(92vw, 820px);
+  color: rgba(245, 239, 232, 0.86);
+  font-size: clamp(0.8rem, 1.5vw, 1.05rem);
   font-weight: 600;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.3em;
   line-height: 1.5;
   text-align: center;
+  text-indent: 0.3em;
   visibility: hidden;
   opacity: 0;
 }
 
 .loader-brand__acronym {
   flex-basis: 100%;
-  margin-bottom: 0.15em;
-  color: #f5efe8;
-  font-family: var(--font-display, inherit);
-  font-size: 1.5em;
+  margin-bottom: 0.2em;
+  background: linear-gradient(90deg, var(--brand-peach), var(--brand-orange) 28%, var(--brand-orange) 49%, var(--brand-blue) 52%, var(--brand-blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 22px rgba(247, 91, 18, 0.35));
+  font-size: clamp(2.4rem, 6vw, 4rem);
   font-weight: 800;
-  letter-spacing: 0.32em;
-  text-indent: 0.32em;
-}
-
-.loader-brand span:nth-child(2) {
-  color: var(--brand-orange);
-}
-
-.loader-brand span:last-child {
-  color: var(--brand-blue);
+  letter-spacing: 0.22em;
+  line-height: 1.05;
+  text-indent: 0.22em;
 }
 
 .loader-brand--ar {
-  gap: 0.28em;
+  gap: 0.2em 0.5em;
   letter-spacing: 0;
+  text-indent: 0;
   font-family: var(--font-arabic);
-  font-size: clamp(1.4rem, 3vw, 2.1rem);
+  font-size: clamp(1.15rem, 2.4vw, 1.6rem);
   font-weight: 700;
+}
+
+.loader-brand--ar .loader-brand__acronym {
+  letter-spacing: 0.16em;
+  text-indent: 0.16em;
 }
 
 /* Fast logo bloom on client-side page switches */

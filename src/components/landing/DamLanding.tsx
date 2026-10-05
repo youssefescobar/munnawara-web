@@ -537,6 +537,22 @@ export const DamLanding = ({ copy }: DamLandingProps) => {
           },
           motion.loader.assembleDelay + motion.loader.assembleDuration * 0.45,
         )
+        .to(
+          elements.brandName,
+          { opacity: 1, duration: 0.3, ease: motion.ease.soft },
+          motion.loader.assembleDelay + motion.loader.assembleDuration * 0.6,
+        )
+        .to(
+          brandWords,
+          {
+            opacity: 1,
+            y: 0,
+            duration: motion.loader.companyRevealDuration,
+            stagger: motion.loader.companyWordStagger,
+            ease: motion.ease.soft,
+          },
+          "<",
+        )
 
       const assembleSettleAt =
         motion.loader.assembleDelay +
