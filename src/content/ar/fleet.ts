@@ -9,7 +9,6 @@ export const fleet: readonly FleetCategory[] = [
   {
     id: "premium-vip-2026",
     name: "باص بريميوم VIP",
-    yearLabel: "2026",
     seatsLabel: "18 + 1 + 1",
     summary:
       "اكتشف قمة الراحة والفخامة في حافلاتنا الجديدة، المزودة بمقاعد مساج مع التدفئة والتبريد لتجربة سفر مثالية.",
@@ -51,7 +50,6 @@ export const fleet: readonly FleetCategory[] = [
   {
     id: "vip-2026",
     name: "باص VIP",
-    yearLabel: "2026",
     seatsLabel: "28 + 1 + 1",
     summary:
       "مقاعد VIP قابلة للتعديل والتحريك تمنحك حرية اختيار وضعية الجلوس المثالية لرحلة أكثر راحة.",
@@ -79,7 +77,6 @@ export const fleet: readonly FleetCategory[] = [
   {
     id: "coach-2025-2026",
     name: "كوتش باص",
-    yearLabel: "2025 – 2026",
     seatsLabel: "49 + 1 + 1",
     summary:
       "نخدم الحجاج والمعتمرين بأسطول مجهز وفق أعلى معايير الجودة والسلامة.",
@@ -105,30 +102,8 @@ export const fleet: readonly FleetCategory[] = [
     images: ["/fleet/coach-2025-2026/cover.webp"],
   },
   {
-    id: "city-2024",
-    name: "سيتي باص",
-    yearLabel: "2024",
-    seatsLabel: "45 + 1",
-    summary:
-      "شبكة نقل عصرية مصممة لتلبية متطلبات المدينة وتسهيل حركة الركاب بكفاءة عالية.",
-    amenities: [
-      "نظام كاميرات مراقبة",
-      "مقاعد جلد فاخرة",
-      "ستائر فاخرة",
-      "وسائل السلامة",
-      "أنظمة فرامل متقدمة ABS",
-      "نظام تحديد المواقع GPS",
-      "تكييف مناسب للأجواء",
-    ],
-    coverImage: "/fleet/city-2024/cover.webp",
-    exteriorImages: ["/fleet/city-2024/cover.webp"],
-    interiorImages: [],
-    images: ["/fleet/city-2024/cover.webp"],
-  },
-  {
     id: "city-2025",
     name: "سيتي باص",
-    yearLabel: "2025",
     seatsLabel: "55 + 1",
     summary:
       "حلول نقل مبتكرة توفر الوقت والجهد وتسهّل التنقل داخل المدينة بأعلى كفاءة.",
@@ -148,8 +123,7 @@ export const fleet: readonly FleetCategory[] = [
   },
   {
     id: "labour-2024",
-    name: "باص العمال",
-    yearLabel: "2024",
+    name: "باص نقل عمال",
     seatsLabel: "66 + 1",
     summary:
       "حلول نقل متطورة تضمن الالتزام بالمواعيد وتجربة سفر سلسة لفريق العمل.",
@@ -165,23 +139,21 @@ export const fleet: readonly FleetCategory[] = [
     images: ["/fleet/labour-2024/cover.webp"],
   },
   {
-    id: "mini-2025-2026",
-    name: "ميني باص",
-    yearLabel: "2025 – 2026",
-    seatsLabel: "55 + 1",
+    id: "coaster-2026",
+    name: "كوستر",
+    seatsLabel: "—", // TODO(content): confirm Coaster seat count with the client
     summary:
-      "تنقل بأمان وراحة مع الميني باص العصري والمجهز لأفضل تجربة سفر.",
+      "حافلة متوسطة الحجم للمجموعات الصغيرة، سهلة الحركة في شوارع المدن وطرق المشاعر.",
     amenities: [
+      // TODO(content): confirm Coaster amenities with the client
       "وسائل السلامة",
       "أنظمة فرامل متقدمة ABS",
-      "نظام تحديد المواقع GPS",
-      "تكييف مناسب للأجواء",
+      "أنظمة تتبع GPS",
+      "تبريد مريح",
     ],
-    coverImage: "/fleet/mini-2025-2026/cover.webp",
-    exteriorImages: ["/fleet/mini-2025-2026/cover.webp"],
+    coverImage: "/fleet/coaster-2026/cover.webp", // TODO(human): placeholder photo, replace with a real Coaster photo
+    exteriorImages: ["/fleet/coaster-2026/cover.webp"],
     interiorImages: [],
-    images: ["/fleet/mini-2025-2026/cover.webp"],
-    // TODO(content): brochure page 14 Arabic banner says سيتي باص while English says Mini Bus — confirm with client
-    notes: "بانتظار تأكيد التصنيف من العميل",
+    images: ["/fleet/coaster-2026/cover.webp"],
   },
 ] as const

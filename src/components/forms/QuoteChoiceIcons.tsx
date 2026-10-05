@@ -49,7 +49,7 @@ export const choiceIcon = (id: string): ReactNode => {
           <path d="M21 9v6" />
         </svg>
       )
-    case "hajj_mission":
+    case "umrah_campaigns":
       return (
         <svg {...common}>
           <path d="M4 19h16" />

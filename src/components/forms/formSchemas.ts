@@ -2,11 +2,10 @@ import { z } from "zod"
 
 /** Customer types (step 1 of the quote wizard). Mirrors dam-backend Quote.customerType. */
 export const tripTypes = [
-  "individual",
   "company",
   "government",
   "school",
-  "hajj_mission",
+  "umrah_campaigns",
   "tourism",
 ] as const
 
@@ -20,14 +19,14 @@ export const orgRequiredTypes: readonly TripType[] = [
   "company",
   "government",
   "school",
-  "hajj_mission",
+  "umrah_campaigns",
   "tourism",
 ]
 
 export const quoteRequestSchema = z
   .object({
     tripType: z.enum(tripTypes),
-    /** e.g. umrah_dawra_short, umrah_maktaa_twoway, charter, company_workers */
+    /** e.g. route_2leg, company_workers */
     serviceType: z.string().trim().max(80).optional().default(""),
     customerName: z.string().trim().min(2).max(120),
     organization: z.string().trim().max(160).optional().default(""),
@@ -45,7 +44,7 @@ export const quoteRequestSchema = z
     busClass: z.enum(busClasses).optional().default("standard"),
     accessibilityNeeds: z.string().trim().max(300).optional().default(""),
     luggageNotes: z.string().trim().max(300).optional().default(""),
-    specialRequirements: z.string().trim().max(500).optional().default(""),
+    specialRequirements: z.string().trim().max(1200).optional().default(""),
     needsSupervisors: z.boolean().optional().default(false),
     needsTracking: z.boolean().optional().default(false),
     needsBranding: z.boolean().optional().default(false),

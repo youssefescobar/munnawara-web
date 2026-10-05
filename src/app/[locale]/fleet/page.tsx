@@ -39,7 +39,6 @@ const FleetPage = async ({ params }: PageProps) => {
             <li key={bus.id}>
               <span className="font-label inline-flex rounded-full border border-ink/10 bg-surface-muted px-4 py-2 text-sm font-medium text-ink">
                 {bus.name}
-                <span className="ms-2 text-ink/40">{bus.yearLabel}</span>
               </span>
             </li>
           ))}

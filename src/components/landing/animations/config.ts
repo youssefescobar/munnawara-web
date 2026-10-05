@@ -1,7 +1,7 @@
 export const animationConfig = {
   loader: {
-    /** Short brand beat only — real wait is asset readiness, not padding. */
-    minimumMs: 2400,
+    /** Brand beat holds at least this long; slow assets extend it (see waitForPageAssets). */
+    minimumMs: 5000,
     /** Empty dark beat before petals enter from off-screen. */
     assembleDelay: 0.4,
     /** Petals fly in from outside the viewport and lock in the center. */

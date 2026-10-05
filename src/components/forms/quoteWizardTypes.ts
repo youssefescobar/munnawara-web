@@ -1,6 +1,6 @@
 import type { ReactNode } from "react"
 import type { BusClass, TripType } from "@/components/forms/formSchemas"
-import type { ExtraId, PlaceId } from "./quoteWizardConfig"
+import type { PlaceId } from "./quoteWizardConfig"
 
 export type WizardProps = {
   className?: string
@@ -16,42 +16,29 @@ export type WizardProps = {
 export type StepId =
   | "customer"
   | "service"
-  | "umrahKind"
-  | "dawraLength"
-  | "dawraRoute"
-  | "maktaaRoute"
-  | "charterRoute"
-  | "when"
+  | "route"
   | "passengers"
   | "vehicle"
   | "extras"
   | "contact"
   | "review"
 
+/** One hop of the trip. Leg N+1 starts where leg N ends (like a multi-city flight search). */
+export type Leg = { from: PlaceId | ""; to: PlaceId | ""; date: string; time: string }
+
+export const MAX_LEGS = 6
+
+export const emptyLeg = (prev?: Leg): Leg => ({ from: prev?.to ?? "", to: "", date: "", time: "" })
+
 export type WizardState = {
   customer: TripType | ""
   service: string
-  umrahKind: string
-  dawraLength: string
-  mazarat: string[]
-  direction: string
-  from: PlaceId | ""
-  to: PlaceId | ""
-  arrival: PlaceId
-  departure: PlaceId
-  pickup: string
-  destination: string
-  stops: string
-  date: string
-  time: string
-  returnDate: string
-  waitingHours: string
+  legs: Leg[]
   passengers: string
   luggage: string
   accessibility: string
   busCount: string
   busClass: BusClass
-  extras: Record<ExtraId, boolean>
   notes: string
   name: string
   organization: string
@@ -63,32 +50,12 @@ export type WizardState = {
 export const initialState: WizardState = {
   customer: "",
   service: "",
-  umrahKind: "",
-  dawraLength: "",
-  mazarat: [],
-  direction: "oneway",
-  from: "",
-  to: "",
-  arrival: "jed_airport",
-  departure: "med_airport",
-  pickup: "",
-  destination: "",
-  stops: "",
-  date: "",
-  time: "",
-  returnDate: "",
-  waitingHours: "",
+  legs: [emptyLeg()],
   passengers: "1",
   luggage: "",
   accessibility: "",
   busCount: "1",
   busClass: "standard",
-  extras: {
-    needsSupervisors: false,
-    needsTracking: false,
-    needsBranding: false,
-    needsAirportReception: false,
-  },
   notes: "",
   name: "",
   organization: "",
