@@ -1,0 +1,110 @@
+/* Experimental 3D home — full-bleed scroll story around the Durrah coach model */
+
+html:has([data-lab-home]) .site-chrome__spacer {
+  height: 0 !important;
+}
+
+html:has([data-lab-home]) main#main {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.lab-home {
+  position: relative;
+  height: 420vh;
+  background: var(--brand-surface);
+}
+
+.lab-home__stage {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow: hidden;
+  background:
+    radial-gradient(120% 70% at 85% 8%, color-mix(in srgb, var(--brand-orange-soft) 38%, transparent), transparent 60%),
+    radial-gradient(90% 60% at 10% 100%, color-mix(in srgb, var(--brand-orange) 14%, transparent), transparent 70%),
+    linear-gradient(180deg, var(--brand-surface-mint) 0%, var(--brand-surface) 55%, var(--brand-surface-muted) 100%);
+}
+
+.lab-home__poster {
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  opacity: 0.55;
+}
+
+.lab-home__canvas {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 700ms ease;
+}
+
+.lab-home__canvas[data-ready="true"] {
+  opacity: 1;
+}
+
+.lab-home__scene {
+  position: absolute;
+  z-index: 2;
+  inset-inline-start: max(1.25rem, 6vw);
+  inset-inline-end: max(1.25rem, 6vw);
+  top: 17dvh;
+  max-width: 34rem;
+  color: var(--brand-ink);
+  opacity: 0;
+  visibility: hidden;
+  will-change: opacity, transform;
+}
+
+/* First scene is the above-the-fold hero: visible without JS or scroll. */
+.lab-home__scene[data-first] {
+  opacity: 1;
+  visibility: visible;
+}
+
+.lab-home__scene--center {
+  text-align: center;
+  margin-inline: auto;
+  max-width: 46rem;
+}
+
+@media (min-width: 900px) {
+  .lab-home__scene {
+    top: 50%;
+    translate: 0 -50%;
+    inset-inline-end: auto;
+  }
+  .lab-home__scene--center {
+    inset-inline-start: 0;
+    inset-inline-end: 0;
+    top: 15dvh;
+    translate: none;
+  }
+}
+
+.lab-home__progress {
+  position: absolute;
+  z-index: 2;
+  inset-inline-end: max(1rem, 2.5vw);
+  top: 50%;
+  translate: 0 -50%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.lab-home__dot {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: var(--brand-ink);
+  opacity: 0.2;
+  transition: opacity 300ms ease, transform 300ms ease;
+}
+
+.lab-home__dot[data-active="true"] {
+  opacity: 1;
+  transform: scale(1.5);
+  background: var(--brand-orange);
+}
