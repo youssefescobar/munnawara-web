@@ -95,26 +95,39 @@ export const corporateServices: readonly Option[] = [
  * Madinah: Prophet's Mosque · MED: Prince Mohammad bin Abdulaziz Int'l Airport.
  */
 
-export type PlaceGroup = "airports" | "holy" | "cities"
+export type PlaceGroup = "airports" | "holy" | "makkahSites" | "madinahSites"
 
 export const placeGroupLabels: Record<PlaceGroup, L10n> = {
   airports: l("Airports", "المطارات"),
   holy: l("Makkah & Madinah", "مكة والمدينة"),
-  cities: l("Other cities", "مدن أخرى"),
+  makkahSites: l("Holy sites in Makkah", "المزارات في مكة"),
+  madinahSites: l("Holy sites in Madinah", "المزارات في المدينة"),
 }
 
-// TODO(content): confirm the full From/To list with Abdullah. Coordinates are city centres.
+// TODO(content): confirm the full From/To list with Abdullah. Airports and holy sites only.
 const rawPlaces = [
   { id: "jed_airport", group: "airports", label: l("Jeddah Airport (JED)", "مطار جدة (JED)"), lat: 21.67944, lng: 39.15667 },
   { id: "med_airport", group: "airports", label: l("Madinah Airport (MED)", "مطار المدينة (MED)"), lat: 24.55333, lng: 39.705 },
+  { id: "tif_airport", group: "airports", label: l("Taif Airport (TIF)", "مطار الطائف (TIF)"), lat: 21.4833, lng: 40.5443 },
+  { id: "ynb_airport", group: "airports", label: l("Yanbu Airport (YNB)", "مطار ينبع (YNB)"), lat: 24.1442, lng: 38.0634 },
+  { id: "ula_airport", group: "airports", label: l("AlUla Airport (ULH)", "مطار العلا (ULH)"), lat: 26.4829, lng: 38.1288 },
+  { id: "ruh_airport", group: "airports", label: l("Riyadh Airport (RUH)", "مطار الرياض (RUH)"), lat: 24.9576, lng: 46.6988 },
+  { id: "dmm_airport", group: "airports", label: l("Dammam Airport (DMM)", "مطار الدمام (DMM)"), lat: 26.4712, lng: 49.7979 },
   { id: "makkah", group: "holy", label: l("Makkah", "مكة المكرمة"), lat: 21.4225, lng: 39.82611 },
   { id: "madinah", group: "holy", label: l("Madinah", "المدينة المنورة"), lat: 24.46833, lng: 39.61083 },
-  { id: "jeddah", group: "cities", label: l("Jeddah", "جدة"), lat: 21.4858, lng: 39.1925 },
-  { id: "taif", group: "cities", label: l("Taif", "الطائف"), lat: 21.2703, lng: 40.4158 },
-  { id: "yanbu", group: "cities", label: l("Yanbu", "ينبع"), lat: 24.0895, lng: 38.0618 },
-  { id: "alula", group: "cities", label: l("AlUla", "العلا"), lat: 26.6084, lng: 37.9232 },
-  { id: "riyadh", group: "cities", label: l("Riyadh", "الرياض"), lat: 24.7136, lng: 46.6753 },
-  { id: "dammam", group: "cities", label: l("Dammam", "الدمام"), lat: 26.4207, lng: 50.0888 },
+  { id: "aisha", group: "makkahSites", label: l("Masjid Aisha (Tan'im)", "مسجد عائشة (التنعيم)"), lat: 21.46771, lng: 39.80137 },
+  { id: "hira", group: "makkahSites", label: l("Jabal al-Nour & Cave of Hira", "جبل النور وغار حراء"), lat: 21.45806, lng: 39.86139 },
+  { id: "thawr", group: "makkahSites", label: l("Jabal Thawr", "جبل ثور"), lat: 21.377, lng: 39.84987 },
+  { id: "mina", group: "makkahSites", label: l("Mina", "منى"), lat: 21.41333, lng: 39.89333 },
+  { id: "muzdalifah", group: "makkahSites", label: l("Muzdalifah", "مزدلفة"), lat: 21.3925, lng: 39.93778 },
+  { id: "arafat", group: "makkahSites", label: l("Mount Arafat", "جبل عرفات"), lat: 21.35472, lng: 39.98389 },
+  { id: "quba", group: "madinahSites", label: l("Quba Mosque", "مسجد قباء"), lat: 24.43917, lng: 39.61722 },
+  { id: "qiblatayn", group: "madinahSites", label: l("Masjid al-Qiblatayn", "مسجد القبلتين"), lat: 24.48409, lng: 39.57891 },
+  { id: "khandaq", group: "madinahSites", label: l("Seven Mosques (Al-Khandaq)", "المساجد السبعة (الخندق)"), lat: 24.47673, lng: 39.59602 },
+  { id: "ghamama", group: "madinahSites", label: l("Masjid al-Ghamama", "مسجد الغمامة"), lat: 24.46581, lng: 39.60696 },
+  { id: "baqi", group: "madinahSites", label: l("Al-Baqi Cemetery", "مقبرة البقيع"), lat: 24.4669, lng: 39.6164 },
+  { id: "uhud", group: "madinahSites", label: l("Mount Uhud & the Martyrs' Cemetery", "جبل أحد ومقبرة الشهداء"), lat: 24.5, lng: 39.61 },
+  { id: "badr", group: "madinahSites", label: l("Badr (full-day trip)", "بدر (رحلة يوم كامل)"), lat: 23.73333, lng: 38.76667 },
 ] as const satisfies readonly (Option & { group: PlaceGroup; lat: number; lng: number })[]
 
 export type PlaceId = (typeof rawPlaces)[number]["id"]
@@ -139,8 +152,9 @@ const hubStop = (id: PlaceId): MapStop => {
 
 export const buildTransferStops = (ids: readonly PlaceId[]): MapStop[] => ids.map(hubStop)
 
-export const allHubStops = (): MapStop[] =>
-  places.filter((p) => p.group !== "cities").map((p) => hubStop(p.id))
+const CONTEXT_HUBS: readonly PlaceId[] = ["jed_airport", "makkah", "madinah", "med_airport"]
+
+export const allHubStops = (): MapStop[] => CONTEXT_HUBS.map(hubStop)
 
 /* ---------- Fleet ---------- */
 
