@@ -24,7 +24,6 @@ const FLEET_FRAMES = [
   { src: "/photos/exterior/7725.webp", ratio: 16 / 9 },
   { src: "/photos/exterior/0436.webp", ratio: 3 / 2 },
   { src: "/photos/exterior/0417.webp", ratio: 3 / 2 },
-  { src: "/photos/exterior/0427.webp", ratio: 3 / 2 },
 ] as const
 
 const DETAIL_FRAMES = [
