@@ -985,6 +985,16 @@ export const DamLanding = ({ copy }: DamLandingProps) => {
           lang={locale}
           dir={locale === "ar" ? "rtl" : "ltr"}
         >
+          <span
+            className="loader-brand__acronym"
+            lang="en"
+            dir="ltr"
+            ref={(element) => {
+              if (element) brandWordsRef.current.push(element)
+            }}
+          >
+            DMTC
+          </span>
           {copy.brandWords.map((word) => (
             <span
               key={word}
