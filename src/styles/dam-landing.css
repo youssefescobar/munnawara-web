@@ -1607,12 +1607,64 @@ a[data-whatsapp-fab] {
   direction: ltr;
 }
 
+.loader-status__bar {
+  position: absolute;
+  inset-inline: -1.6rem;
+  top: calc(100% + 0.9rem);
+  height: 3px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(245, 239, 232, 0.12);
+}
+
+.loader-status__bar::after {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 42%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, transparent, var(--brand-orange), var(--brand-blue), transparent);
+  box-shadow: 0 0 10px 1px rgba(243, 112, 33, 0.55);
+  animation: loader-sweep 1.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes loader-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(240%);
+  }
+}
+
+html[dir='rtl'] .loader-status__bar::after {
+  animation-name: loader-sweep-rtl;
+}
+
+@keyframes loader-sweep-rtl {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-240%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader-status__bar::after {
+    animation: none;
+    width: 100%;
+    opacity: 0.5;
+  }
+}
+
 .loader-status--ar {
   direction: rtl;
   gap: 0;
   letter-spacing: 0;
   font-family: var(--font-arabic);
-  font-size: clamp(1.1rem, 2.4vw, 1.5rem);
+  font-size: 0.78rem;
 }
 
 .loader-brand {
@@ -1655,13 +1707,8 @@ a[data-whatsapp-fab] {
   gap: 0.28em;
   letter-spacing: 0;
   font-family: var(--font-arabic);
-  font-size: clamp(2rem, 4.6vw, 3.1rem);
+  font-size: clamp(1.4rem, 3vw, 2.1rem);
   font-weight: 700;
-}
-
-html[lang='ar'] .logo-flight__mark {
-  width: min(48vw, 48vh);
-  height: min(48vw, 48vh);
 }
 
 /* Fast logo bloom on client-side page switches */
