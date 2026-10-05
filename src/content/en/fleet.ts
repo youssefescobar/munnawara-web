@@ -9,7 +9,6 @@ export const fleet: readonly FleetCategory[] = [
   {
     id: "premium-vip-2026",
     name: "Premium VIP Bus",
-    yearLabel: "2026",
     seatsLabel: "18 + 1 + 1",
     summary:
       "Discover the pinnacle of comfort and luxury in our new buses, equipped with massage seats featuring heating and cooling for the ultimate travel experience.",
@@ -51,7 +50,6 @@ export const fleet: readonly FleetCategory[] = [
   {
     id: "vip-2026",
     name: "VIP Bus",
-    yearLabel: "2026",
     seatsLabel: "28 + 1 + 1",
     summary:
       "Experience ultimate comfort with our adjustable and movable VIP seats, allowing you to choose the perfect seating position for a truly relaxing journey.",
@@ -79,7 +77,6 @@ export const fleet: readonly FleetCategory[] = [
   {
     id: "coach-2025-2026",
     name: "Coach Bus",
-    yearLabel: "2025 – 2026",
     seatsLabel: "49 + 1 + 1",
     summary:
       "We serve Hajj and Umrah pilgrims with a fleet equipped to the highest standards of quality and safety.",
@@ -105,30 +102,8 @@ export const fleet: readonly FleetCategory[] = [
     images: ["/fleet/coach-2025-2026/cover.webp"],
   },
   {
-    id: "city-2024",
-    name: "City Bus",
-    yearLabel: "2024",
-    seatsLabel: "45 + 1",
-    summary:
-      "A modern transport network designed to meet the city's needs and facilitate passenger movement with high efficiency.",
-    amenities: [
-      "CCTV system",
-      "Luxury leather seats",
-      "Luxury curtains",
-      "Safety features",
-      "ABS systems",
-      "GPS systems",
-      "Cooling bus comfort",
-    ],
-    coverImage: "/fleet/city-2024/cover.webp",
-    exteriorImages: ["/fleet/city-2024/cover.webp"],
-    interiorImages: [],
-    images: ["/fleet/city-2024/cover.webp"],
-  },
-  {
     id: "city-2025",
     name: "City Bus",
-    yearLabel: "2025",
     seatsLabel: "55 + 1",
     summary:
       "Innovative transport solutions that save time and effort, making urban mobility highly efficient.",
@@ -148,8 +123,7 @@ export const fleet: readonly FleetCategory[] = [
   },
   {
     id: "labour-2024",
-    name: "Labour Bus",
-    yearLabel: "2024",
+    name: "Workers Transport Bus",
     seatsLabel: "66 + 1",
     summary:
       "Advanced transport solutions ensuring punctuality and a seamless travel experience for the workforce.",
@@ -165,23 +139,21 @@ export const fleet: readonly FleetCategory[] = [
     images: ["/fleet/labour-2024/cover.webp"],
   },
   {
-    id: "mini-2025-2026",
-    name: "Mini Bus",
-    yearLabel: "2025 – 2026",
-    seatsLabel: "55 + 1",
+    id: "coaster-2026",
+    name: "Coaster",
+    seatsLabel: "—", // TODO(content): confirm Coaster seat count with the client
     summary:
-      "Travel safely and comfortably with the modern minibus, equipped for the best travel experience.",
+      "A compact coach for smaller groups, easy to move through city streets and holy-site roads.",
     amenities: [
+      // TODO(content): confirm Coaster amenities with the client
       "Safety features",
       "ABS systems",
       "GPS systems",
       "Cooling bus comfort",
     ],
-    coverImage: "/fleet/mini-2025-2026/cover.webp",
-    exteriorImages: ["/fleet/mini-2025-2026/cover.webp"],
+    coverImage: "/fleet/coaster-2026/cover.webp", // TODO(human): placeholder photo, replace with a real Coaster photo
+    exteriorImages: ["/fleet/coaster-2026/cover.webp"],
     interiorImages: [],
-    images: ["/fleet/mini-2025-2026/cover.webp"],
-    // TODO(content): brochure page 14 Arabic banner says سيتي باص while English says Mini Bus — confirm with client
-    notes: "Awaiting client confirmation of category labeling",
+    images: ["/fleet/coaster-2026/cover.webp"],
   },
 ] as const

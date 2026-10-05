@@ -21,15 +21,13 @@ export type FleetCategoryId =
   | "premium-vip-2026"
   | "vip-2026"
   | "coach-2025-2026"
-  | "city-2024"
   | "city-2025"
   | "labour-2024"
-  | "mini-2025-2026"
+  | "coaster-2026"
 
 export type FleetCategory = {
   id: FleetCategoryId
   name: string
-  yearLabel: string
   seatsLabel: string
   summary: string
   amenities: readonly string[]
@@ -38,8 +36,6 @@ export type FleetCategory = {
   interiorImages: readonly string[]
   images: readonly string[]
   interactive?: boolean
-  /** TODO(content): confirm Mini Bus Arabic label vs English brochure mismatch */
-  notes?: string
 }
 
 export type FleetPageContent = {

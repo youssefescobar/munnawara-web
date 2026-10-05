@@ -83,9 +83,6 @@ export const FleetBusFlipCard = ({
             />
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
             <div className="pointer-events-none absolute inset-x-0 bottom-0 p-4 text-white sm:p-5">
-              <p className="text-xs font-medium tracking-wide text-white/65">
-                {bus.yearLabel}
-              </p>
               <p className="text-lg font-semibold tracking-tight sm:text-xl">
                 {bus.name}
               </p>
@@ -105,7 +102,7 @@ export const FleetBusFlipCard = ({
                 {bus.name}
               </h3>
               <p className="mt-1 text-xs text-ink-muted sm:text-sm">
-                {bus.yearLabel} · {tCommon("seats")}: {bus.seatsLabel}
+                {tCommon("seats")}: {bus.seatsLabel}
               </p>
             </div>
 

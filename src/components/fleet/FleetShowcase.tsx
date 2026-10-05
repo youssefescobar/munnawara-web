@@ -31,7 +31,7 @@ export const FleetShowcase = ({ categories }: FleetShowcaseProps) => {
         src: bus.coverImage,
         alt: bus.name,
         title: bus.name,
-        subtitle: `${bus.yearLabel} · ${tCommon("seats")}: ${bus.seatsLabel}`,
+        subtitle: `${tCommon("seats")}: ${bus.seatsLabel}`,
       })),
     [categories, tCommon],
   )
