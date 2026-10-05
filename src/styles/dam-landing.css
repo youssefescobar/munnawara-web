@@ -1595,7 +1595,7 @@ a[data-whatsapp-fab] {
 }
 
 .loader-status {
-  top: calc(50% + min(34vh, 255px));
+  top: calc(50% + min(25vh, 185px));
   display: flex;
   gap: 0.28em;
   color: rgba(245, 239, 232, 0.55);
@@ -1668,51 +1668,56 @@ html[dir='rtl'] .loader-status__bar::after {
 }
 
 .loader-brand {
-  top: calc(50% + min(11vh, 82px));
+  top: calc(50% + min(7vh, 52px));
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 0.35em 0.6em;
+  gap: 0.1em 0.5em;
   justify-content: center;
   width: min(92vw, 820px);
-  color: rgba(245, 239, 232, 0.86);
-  font-size: clamp(0.8rem, 1.5vw, 1.05rem);
+  color: rgba(245, 239, 232, 0.88);
+  font-size: clamp(0.78rem, 1.4vw, 1rem);
   font-weight: 600;
-  letter-spacing: 0.3em;
+  letter-spacing: 0.26em;
   line-height: 1.5;
   text-align: center;
-  text-indent: 0.3em;
+  text-indent: 0.26em;
   visibility: hidden;
   opacity: 0;
 }
 
 .loader-brand__acronym {
   flex-basis: 100%;
-  margin-bottom: 0.2em;
-  background: linear-gradient(90deg, var(--brand-peach), var(--brand-orange) 28%, var(--brand-orange) 49%, var(--brand-blue) 52%, var(--brand-blue));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 0 22px rgba(247, 91, 18, 0.35));
-  font-size: clamp(2.4rem, 6vw, 4rem);
+  margin-bottom: 0.1em;
+  color: var(--brand-peach);
+  font-size: clamp(1.9rem, 4.4vw, 2.8rem);
   font-weight: 800;
-  letter-spacing: 0.22em;
-  line-height: 1.05;
-  text-indent: 0.22em;
+  letter-spacing: 0.14em;
+  line-height: 1.1;
+  text-indent: 0.14em;
+}
+
+.loader-brand span:nth-child(2) {
+  color: var(--brand-orange);
+}
+
+.loader-brand span:last-child {
+  color: var(--brand-blue);
 }
 
 .loader-brand--ar {
-  gap: 0.2em 0.5em;
+  gap: 0.1em 0.4em;
   letter-spacing: 0;
   text-indent: 0;
   font-family: var(--font-arabic);
-  font-size: clamp(1.15rem, 2.4vw, 1.6rem);
+  font-size: clamp(1.1rem, 2.2vw, 1.5rem);
   font-weight: 700;
 }
 
 .loader-brand--ar .loader-brand__acronym {
-  letter-spacing: 0.16em;
-  text-indent: 0.16em;
+  font-family: var(--font-display, inherit);
+  letter-spacing: 0.14em;
+  text-indent: 0.14em;
 }
 
 /* Fast logo bloom on client-side page switches */
