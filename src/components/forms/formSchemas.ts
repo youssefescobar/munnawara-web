@@ -23,6 +23,13 @@ export const orgRequiredTypes: readonly TripType[] = [
   "tourism",
 ]
 
+export const quoteLegSchema = z.object({
+  from: z.string().trim().min(2).max(120),
+  to: z.string().trim().min(2).max(120),
+  date: z.string().trim().max(40).optional().default(""),
+  time: z.string().trim().max(20).optional().default(""),
+})
+
 export const quoteRequestSchema = z
   .object({
     tripType: z.enum(tripTypes),
@@ -35,6 +42,7 @@ export const quoteRequestSchema = z
     pickup: z.string().trim().min(2).max(120),
     destination: z.string().trim().min(2).max(120),
     stops: z.string().trim().max(300).optional().default(""),
+    legs: z.array(quoteLegSchema).max(10).optional().default([]),
     date: z.string().trim().min(1).max(40),
     departureTime: z.string().trim().max(20).optional().default(""),
     returnDate: z.string().trim().max(40).optional().default(""),

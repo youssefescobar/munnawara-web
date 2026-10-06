@@ -85,6 +85,7 @@ export const submitQuoteRequest = async (
           originCity: data.pickup,
           destinationCity: data.destination,
           stops: data.stops || undefined,
+          legs: data.legs.length ? data.legs : undefined,
           departureTime: data.departureTime || undefined,
           waitingHours: data.waitingHours ?? undefined,
           accessibilityNeeds: data.accessibilityNeeds || undefined,
@@ -167,6 +168,15 @@ export const submitQuoteRequest = async (
             `Stops: ${data.stops || "-"}`,
             `Date: ${data.date} ${data.departureTime || ""}`,
             `Return: ${data.returnDate || "-"}`,
+            ...(data.legs.length > 1
+              ? [
+                  "Itinerary:",
+                  ...data.legs.map(
+                    (leg, i) =>
+                      `  ${i + 1}) ${leg.from} → ${leg.to} ${leg.date} ${leg.time}`.trimEnd(),
+                  ),
+                ]
+              : []),
             `Passengers: ${data.passengers}`,
             `Buses: ${data.busCount} × ${data.busClass}`,
             `Phone: ${data.phone}`,
