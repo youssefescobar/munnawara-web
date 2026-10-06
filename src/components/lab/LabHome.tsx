@@ -31,6 +31,8 @@ export const LabHome = ({ hero, points, closing }: LabHomeProps) => {
   const trackRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLDivElement>(null)
   const sceneRefs = useRef<(HTMLDivElement | null)[]>([])
+  const ghostRef = useRef<HTMLDivElement>(null)
+  const headlineRef = useRef<HTMLHeadingElement>(null)
   const dotRefs = useRef<(HTMLSpanElement | null)[]>([])
   const [ready, setReady] = useState(false)
   const [failed, setFailed] = useState(false)
@@ -40,7 +42,11 @@ export const LabHome = ({ hero, points, closing }: LabHomeProps) => {
     const track = trackRef.current
     if (!canvas || !track) return
 
+    const ghost = ghostRef.current
     const paint = (p: number) => {
+      // Giant backdrop word slides the opposite way to the bus, so the coach passes in front of it.
+      if (ghost) ghost.style.transform = `translate3d(${(8 - p * 24).toFixed(2)}vw, 0, 0)`
+      track.style.setProperty("--lab-p", p.toFixed(3))
       const s = p * (SCENE_COUNT - 1)
       sceneRefs.current.forEach((el, i) => {
         if (!el) return
@@ -58,9 +64,14 @@ export const LabHome = ({ hero, points, closing }: LabHomeProps) => {
     }
     paint(0)
 
+    const lines = headlineRef.current?.querySelectorAll("[data-line]")
+    if (lines?.length && !reduced) {
+      gsap.from(lines, { yPercent: 110, duration: 1.1, ease: "expo.out", stagger: 0.12, delay: 0.25 })
+    }
+
     const stage = createBusStage({
       container: canvas,
-      modelUrl: "/models/bus_durrah.glb",
+      modelUrl: "/models/bus_durrah_v2.glb",
       side: locale === "ar" ? -1 : 1,
       animate: !reduced,
       onFrame: paint,
@@ -99,6 +110,10 @@ export const LabHome = ({ hero, points, closing }: LabHomeProps) => {
             className="lab-home__poster"
           />
         ) : null}
+        <div ref={ghostRef} className="lab-home__ghost" aria-hidden>
+          {hero.lines[hero.lines.length - 1]}
+        </div>
+        <div className="lab-home__speed" aria-hidden />
         <div
           ref={canvasRef}
           className="lab-home__canvas"
@@ -110,13 +125,15 @@ export const LabHome = ({ hero, points, closing }: LabHomeProps) => {
           <p className="font-label mb-4 text-xs font-semibold tracking-[0.22em] text-orange-text uppercase rtl:tracking-wide">
             {hero.eyebrow}
           </p>
-          <h1 className="text-5xl leading-[1.05] font-semibold tracking-tight md:text-7xl">
+          <h1 ref={headlineRef} className="text-5xl leading-[1.05] font-semibold tracking-tight md:text-7xl">
             {hero.lines.map((line, i) => (
-              <span
-                key={line}
-                className={cn("block", i === hero.lines.length - 1 && "text-wordmark")}
-              >
-                {line}
+              <span key={line} className="block overflow-hidden pb-[0.12em]">
+                <span
+                  data-line
+                  className={cn("block", i === hero.lines.length - 1 && "text-wordmark")}
+                >
+                  {line}
+                </span>
               </span>
             ))}
           </h1>
