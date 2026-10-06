@@ -138,15 +138,6 @@ export function validateStep(
   return e
 }
 
-/** Whole itinerary as one line per leg, for the sales team (English). */
-const itineraryText = (state: WizardState) =>
-  state.legs
-    .map(
-      (leg, i) =>
-        `${i + 1}) ${placeLabel(leg.from, "en")} -> ${placeLabel(leg.to, "en")} ${leg.date} ${leg.time}`.trim(),
-    )
-    .join(" | ")
-
 export function buildQuotePayload(
   state: WizardState,
   serviceType: string,
@@ -156,7 +147,8 @@ export function buildQuotePayload(
   const route = getRouteParts(state, "en")
   const first = state.legs[0]
   const last = state.legs[state.legs.length - 1]
-  const itinerary = state.legs.length > 1 ? `Itinerary: ${itineraryText(state)}` : ""
+  /** Only a trip that ends where it started has a return date. */
+  const isReturn = state.legs.length > 1 && !!first.from && last.to === first.from
   return {
     tripType: state.customer || undefined,
     serviceType,
@@ -167,15 +159,21 @@ export function buildQuotePayload(
     pickup: route.pickup,
     destination: route.destination,
     stops: route.stops,
+    legs: state.legs.map((leg) => ({
+      from: placeLabel(leg.from, "en"),
+      to: placeLabel(leg.to, "en"),
+      date: leg.date,
+      time: leg.time,
+    })),
     date: first.date,
     departureTime: first.time,
-    returnDate: state.legs.length > 1 ? last.date : "",
+    returnDate: isReturn ? last.date : "",
     passengers: Number(state.passengers),
     busCount: Number(state.busCount) || 1,
     busClass: state.busClass,
     accessibilityNeeds: state.accessibility,
     luggageNotes: state.luggage,
-    specialRequirements: [itinerary, state.notes.trim()].filter(Boolean).join("\n"),
+    specialRequirements: state.notes.trim(),
     consent: state.consent,
     language: isAr ? ("ar" as const) : ("en" as const),
     companyWebsite: honeypot,
