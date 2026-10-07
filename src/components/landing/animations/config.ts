@@ -14,13 +14,16 @@ export const animationConfig = {
     breatheDuration: 2.2,
     breatheScale: 1.025,
     hintDuration: 0.4,
+    /** Petals go from gray to full colour one after another while loading. */
+    colorDuration: 0.55,
+    colorStagger: 0.2,
   },
   intro: {
     petalStart: 0.05,
     petalTravelStagger: 0.1,
     logoTravelDuration: 1.1,
-    logoHandoffDuration: 0.06,
-    logoHandoffStart: 1.55,
+    logoHandoffDuration: 0.45,
+    logoHandoffStart: 1.4,
     overlayFadeStart: 0.06,
     overlayFadeDuration: 0.55,
     navStart: 1.62,

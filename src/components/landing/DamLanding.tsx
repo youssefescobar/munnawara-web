@@ -476,6 +476,21 @@ export const DamLanding = ({ copy }: DamLandingProps) => {
         y: 0,
         transformOrigin: "center center",
       })
+      // Petals start colourless and are brought to colour one by one once assembled.
+      const logoPetals = Array.from(elements.logo.querySelectorAll<SVGGElement>(".petal"))
+      const GRAY = "grayscale(1) brightness(1.15)"
+      const COLOR = "grayscale(0) brightness(1)"
+      gsap.set([...petalFlights, ...logoPetals], { filter: GRAY })
+      let colorize: gsap.core.Timeline | null = null
+      const startColorize = () => {
+        if (colorize) return
+        colorize = gsap.timeline().to(logoPetals, {
+          filter: COLOR,
+          duration: motion.loader.colorDuration,
+          stagger: motion.loader.colorStagger,
+          ease: "sine.inOut",
+        })
+      }
       gsap.set(petalFlights, {
         visibility: "visible",
         opacity: 0,
@@ -499,7 +514,9 @@ export const DamLanding = ({ copy }: DamLandingProps) => {
           y: 0,
           scale: 1,
           rotation: 0,
+          filter: "none", // the intro flight reuses these petals, in full colour
         })
+        startColorize()
       }
 
       const assembleDone = new Promise<void>((resolve) => {
@@ -595,21 +612,25 @@ export const DamLanding = ({ copy }: DamLandingProps) => {
         await assembleDone
         if (cancelled) return
 
+        // Let the colour wave finish before revealing, so every petal is coloured.
+        if (colorize && colorize.progress() < 1) {
+          await new Promise<void>((resolve) => {
+            colorize!.eventCallback("onComplete", () => resolve())
+          })
+          if (cancelled) return
+        }
+
         assemble?.kill()
         breathing?.kill()
         loadingPulse?.kill()
         handoffAssemble()
-        gsap.set(elements.logo, {
-          opacity: 1,
-          scale: 1,
-          rotation: 0,
-          x: 0,
-          y: 0,
-        })
+        // Ease out of the breathing scale instead of snapping to 1.
+        gsap.set(elements.logo, { opacity: 1, rotation: 0, x: 0, y: 0 })
         reveal = gsap
           .timeline({
             onComplete: completeIntroLoad,
           })
+          .to(elements.logo, { scale: 1, duration: 0.5, ease: "sine.inOut" }, 0)
           .to(loaderLetters, {
             opacity: 0,
             y: -8,

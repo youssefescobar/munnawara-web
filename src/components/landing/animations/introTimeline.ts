@@ -193,14 +193,19 @@ export function createIntroTimeline(elements: IntroElements) {
     opacity: 1,
     transformOrigin: 'center center',
   })
+  // The loader hands off with these `visibility: hidden`; make them paintable (still opacity 0).
   gsap.set(elements.petalFlights, {
     x: 0,
     y: 0,
     scale: 1,
     opacity: 0,
+    visibility: 'visible',
     transformOrigin: 'center center',
   })
   gsap.set(elements.cornerLogo, { opacity: 0, visibility: 'visible' })
+  // Freeze the corner mark's idle petal dance at its rest pose until the handoff,
+  // so the landing petals match it exactly.
+  elements.cornerLogo.classList.add('is-petal-flying')
   gsap.set(elements.nav, { visibility: 'visible' })
   gsap.set(elements.navBar, { scaleX: 0, opacity: 0, transformOrigin: navOrigin })
   gsap.set(elements.navItems, { x: navItemFrom, opacity: 0 })
@@ -332,15 +337,20 @@ export function createIntroTimeline(elements: IntroElements) {
       },
       motion.intro.heroStart,
     )
-    .to(
-      elements.petalFlights,
-      { opacity: 0, duration: motion.intro.logoHandoffDuration, ease: motion.ease.inOut },
-      motion.intro.logoHandoffStart,
-    )
+    // Corner logo (above the flight layer) fades in under the landing petals; the
+    // flight layer is hidden only once it is fully opaque, so there is no alpha dip or snap.
     .to(
       elements.cornerLogo,
-      { opacity: 1, duration: motion.intro.logoHandoffDuration, ease: motion.ease.inOut },
+      { opacity: 1, duration: motion.intro.logoHandoffDuration, ease: 'sine.inOut' },
       motion.intro.logoHandoffStart,
+    )
+    .call(
+      () => {
+        gsap.set(elements.petalFlights, { opacity: 0, visibility: 'hidden' })
+        elements.cornerLogo.classList.remove('is-petal-flying')
+      },
+      [],
+      motion.intro.logoHandoffStart + motion.intro.logoHandoffDuration,
     )
     .to(
       elements.navBar,
