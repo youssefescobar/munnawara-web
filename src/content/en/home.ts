@@ -46,27 +46,27 @@ export const home: HomeContent = {
     {
       id: "request",
       number: "01",
-      title: "Request your trip & expect a follow-up,",
+      title: "Tell us about your trip… we handle the rest",
       description:
-        "Share trip type, cities, dates, and passenger count through the quote form or WhatsApp. Our team reviews the request and prepares clear options.",
+        "Share the trip type, destination, date, and number of passengers through the quote form or WhatsApp, and our team will contact you with the best option for your trip.",
       ctaLabel: "Request a quote",
       ctaHref: "#quote",
     },
     {
       id: "quote",
       number: "02",
-      title: "Choose the best option for your group.",
+      title: "We prepare the best option for you",
       description:
-        "We send a confirmed quote and itinerary covering fleet, timing, and supporting services so you can decide with confidence.",
+        "We offer you different options and outstanding services so you can choose what suits your trip.",
       ctaLabel: null,
       ctaHref: null,
     },
     {
       id: "confirm",
       number: "03",
-      title: "Trip confirmed.",
+      title: "We confirm your trip and prepare every detail..",
       description:
-        "Once approved, we assign the vehicle and driver and keep coordination open through departure.",
+        "Once the offer is approved, we prepare the right bus and coordinate the trip details so everything is ready at the scheduled time.",
       ctaLabel: "Contact us",
       ctaHref: "/contact",
     },

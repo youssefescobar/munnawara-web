@@ -115,12 +115,18 @@ const rawPlaces = [
   { id: "dmm_airport", group: "airports", label: l("Dammam Airport (DMM)", "مطار الدمام (DMM)"), lat: 26.4712, lng: 49.7979 },
   { id: "makkah", group: "holy", label: l("Makkah", "مكة المكرمة"), lat: 21.4225, lng: 39.82611 },
   { id: "madinah", group: "holy", label: l("Madinah", "المدينة المنورة"), lat: 24.46833, lng: 39.61083 },
-  { id: "aisha", group: "makkahSites", label: l("Masjid Aisha (Tan'im)", "مسجد عائشة (التنعيم)"), lat: 21.46771, lng: 39.80137 },
+  { id: "makkah_ziyarat", group: "makkahSites", label: l("Makkah Ziyarat tour", "مكة - مزارات"), lat: 21.4225, lng: 39.82611 },
+  { id: "hudaybiyah", group: "makkahSites", label: l("Miqat al-Hudaybiyah", "مكة - ميقات الحديبية"), lat: 21.4333, lng: 39.6833 }, // TODO(content): verify coords
+  { id: "jiranah", group: "makkahSites", label: l("Miqat al-Ja'ranah", "مكة - ميقات الجعرانة"), lat: 21.5333, lng: 40.0 }, // TODO(content): verify coords
+  { id: "aisha", group: "makkahSites", label: l("Miqat al-Tan'im (Masjid Aisha)", "مكة - ميقات التنعيم"), lat: 21.46771, lng: 39.80137 },
+  { id: "taif_tour", group: "makkahSites", label: l("Taif tour", "مكة - جولة الطائف"), lat: 21.2703, lng: 40.4158 },
   { id: "hira", group: "makkahSites", label: l("Jabal al-Nour & Cave of Hira", "جبل النور وغار حراء"), lat: 21.45806, lng: 39.86139 },
   { id: "thawr", group: "makkahSites", label: l("Jabal Thawr", "جبل ثور"), lat: 21.377, lng: 39.84987 },
   { id: "mina", group: "makkahSites", label: l("Mina", "منى"), lat: 21.41333, lng: 39.89333 },
   { id: "muzdalifah", group: "makkahSites", label: l("Muzdalifah", "مزدلفة"), lat: 21.3925, lng: 39.93778 },
   { id: "arafat", group: "makkahSites", label: l("Mount Arafat", "جبل عرفات"), lat: 21.35472, lng: 39.98389 },
+  { id: "madinah_ziyarat", group: "madinahSites", label: l("Madinah Ziyarat tour", "المدينة - مزارات"), lat: 24.46833, lng: 39.61083 },
+  { id: "mushaf", group: "madinahSites", label: l("Mushaf Printing Complex", "المدينة - مطبعة المصحف"), lat: 24.4833, lng: 39.5 }, // TODO(content): verify coords
   { id: "quba", group: "madinahSites", label: l("Quba Mosque", "مسجد قباء"), lat: 24.43917, lng: 39.61722 },
   { id: "qiblatayn", group: "madinahSites", label: l("Masjid al-Qiblatayn", "مسجد القبلتين"), lat: 24.48409, lng: 39.57891 },
   { id: "khandaq", group: "madinahSites", label: l("Seven Mosques (Al-Khandaq)", "المساجد السبعة (الخندق)"), lat: 24.47673, lng: 39.59602 },
