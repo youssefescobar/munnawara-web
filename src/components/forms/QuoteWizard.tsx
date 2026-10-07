@@ -112,6 +112,16 @@ export const QuoteWizard = ({
   const todayISO = getTodayISO()
   const mapView = () => getMapView(state)
   const finalStops = () => getFinalStops(state)
+
+  // Map card stays collapsed until the first place is picked, then slides in; the
+  // Leaflet map mounts only once the card has finished growing so it flies in cleanly.
+  const hasStops = mapView().stops.length > 0
+  const [mapOn, setMapOn] = useState(false)
+  useEffect(() => {
+    if (!hasStops) return setMapOn(false)
+    const t = window.setTimeout(() => setMapOn(true), reducedMotion ? 0 : 700)
+    return () => window.clearTimeout(t)
+  }, [hasStops, reducedMotion])
   const serviceType = getServiceType(state, isCompany)
   const summaryRows = () => buildSummaryRows(state, locale, serviceOptions, tx)
 
@@ -228,10 +238,11 @@ export const QuoteWizard = ({
           id={formId}
           ref={topRef}
           dir={isAr ? "rtl" : "ltr"}
+          data-map={view.stops.length ? "on" : "off"}
           className={cn("qw-split text-start", className)}
         >
-          <aside className="qw-split__map" aria-label={isAr ? "الخريطة" : "Route map"}>
-            {view.stops.length ? (
+          <aside className="qw-split__map" aria-label={isAr ? "الخريطة" : "Route map"} aria-hidden={!view.stops.length}>
+            {view.stops.length && mapOn ? (
               <QuoteMap
                 stops={view.stops}
                 context={view.context}
@@ -239,11 +250,7 @@ export const QuoteWizard = ({
                 still={reducedMotion}
                 className="qmap qmap--fill"
               />
-            ) : (
-              <div className="grid h-full place-items-center bg-surface-muted/60">
-                <GlobeVisual className="size-24 opacity-80" />
-              </div>
-            )}
+            ) : null}
             {heading ? (
               <div className="qw-split__chip">
                 {heading.eyebrow ? (
@@ -257,7 +264,12 @@ export const QuoteWizard = ({
               </div>
             ) : null}
           </aside>
-          <section className="qw-split__panel">{children}</section>
+          <section className="qw-split__panel">
+            {heading && !view.stops.length ? (
+              <h1 className="font-display mb-3 shrink-0 text-lg font-semibold text-ink sm:text-xl">{heading.title}</h1>
+            ) : null}
+            {children}
+          </section>
         </div>
       )
     }

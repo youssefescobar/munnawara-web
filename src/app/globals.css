@@ -511,6 +511,44 @@ body:has([data-quote-page]) main#main {
   box-shadow: 0 10px 30px -18px rgb(0 0 0 / 0.45);
 }
 .qmap--fill { height: 100% !important; border-radius: 0; }
+
+/* Map card is collapsed until the first place is picked, then grows in beside the form. */
+.qw-split {
+  transition: grid-template-columns 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+    grid-template-rows 0.65s cubic-bezier(0.22, 1, 0.36, 1), gap 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.qw-split__map {
+  transition: opacity 0.5s ease 0.15s, transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  background: var(--brand-surface-muted, rgb(128 128 128 / 0.12));
+}
+.qw-split__panel {
+  width: 100%;
+  justify-self: center;
+  max-width: 100rem;
+  transition: max-width 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.qw-split[data-map="off"] {
+  gap: 0;
+  grid-template-rows: 0px minmax(0, 1fr);
+}
+.qw-split[data-map="off"] .qw-split__map {
+  opacity: 0;
+  transform: scale(0.94);
+  border-width: 0;
+  box-shadow: none;
+  pointer-events: none;
+  transition-delay: 0s;
+}
+@media (min-width: 1024px), (orientation: landscape) and (max-height: 560px) and (min-width: 560px) {
+  .qw-split[data-map="off"] {
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 0fr) minmax(0, 1fr);
+  }
+  .qw-split[data-map="off"] .qw-split__panel { max-width: 44rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .qw-split, .qw-split__map, .qw-split__panel { transition: none; }
+}
 .qw-split__chip {
   position: absolute;
   z-index: 1000;
