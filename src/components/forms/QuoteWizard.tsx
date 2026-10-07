@@ -8,7 +8,6 @@ import { useLocale } from "next-intl"
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from "react"
 import { corporateServices, orgRequired, pick, type L10n, type Option } from "./quoteWizardConfig"
 import dynamic from "next/dynamic"
-import { GlobeVisual } from "./QuoteVisuals"
 import { COPY } from "./quoteWizardCopy"
 import {
   buildQuotePayload,
@@ -344,7 +343,6 @@ export const QuoteWizard = ({
 
   /* ---- step bodies ---- */
 
-  const showGlobe = step === "customer" || step === "service"
   const showRoute = step === "route"
 
   const mapData = showRoute && !split && mapView().stops.length ? mapView() : null
@@ -397,9 +395,6 @@ export const QuoteWizard = ({
         <div data-lenis-prevent className={split ? "qw-scroll @container min-h-0 flex-1 overflow-y-auto overscroll-contain" : "@container space-y-5"}>
         <div key={step} className={cn("qw-step space-y-4", dir === "fwd" ? "qw-step--fwd" : "qw-step--back")}>
           <div className="flex items-center gap-3">
-            {showGlobe ? (
-              <GlobeVisual className="size-11 shrink-0 sm:size-12" />
-            ) : null}
             <h2 className="font-display text-xl leading-snug font-semibold text-balance text-ink sm:text-2xl">
               {tx(COPY.titles[step])}
             </h2>

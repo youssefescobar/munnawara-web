@@ -1,9 +1,11 @@
 import type { BusClass, TripType } from "@/components/forms/formSchemas"
 import { cn } from "@/lib/cn"
+import { useState } from "react"
 import {
   busClassOptions,
   customerOptions,
   placeGroupLabels,
+  placeLabel,
   places,
   type Option,
 } from "./quoteWizardConfig"
@@ -28,49 +30,35 @@ export type StepBodyProps = {
   summaryRows: () => SummaryRow[]
 }
 
-export function StepBody({
-  step,
+const isLegComplete = (leg: Leg) => Boolean(leg.from && leg.to && leg.date && leg.time)
+
+const legWhen = (leg: Leg, locale: string) => {
+  const date = new Intl.DateTimeFormat(locale === "ar" ? "ar-SA-u-nu-latn" : "en-GB", {
+    day: "numeric",
+    month: "short",
+  }).format(new Date(`${leg.date}T00:00:00`))
+  const m = /^(\d{1,2}):(\d{2})$/.exec(leg.time)
+  const time = m
+    ? new Intl.DateTimeFormat(locale === "ar" ? "ar-SA-u-nu-latn" : "en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      }).format(new Date(2000, 0, 1, Number(m[1]), Number(m[2])))
+    : leg.time
+  return `${date} · ${time}`
+}
+
+/** Route step: finished trips collapse to a one-line summary while the next trip is being filled in. */
+function RouteLegs({
   state,
   errors,
   locale,
   tx,
   patch,
-  jumpTo,
-  serviceOptions,
-  isCompany,
-  needsOrg,
   todayISO,
-  summaryRows,
-}: StepBodyProps) {
-  const inputErr = (key: string) => (errors[key] ? fieldErrorRing : "")
-
-  switch (step) {
-    case "customer":
-      return (
-        <Choices
-          options={customerOptions}
-          value={state.customer}
-          locale={locale}
-          onPick={(id) => {
-            const next = id as TripType
-            patch({
-              customer: next,
-              service:
-                (next === "company") === isCompany || !state.service ? state.service : "",
-            })
-          }}
-        />
-      )
-    case "service":
-      return (
-        <Choices
-          options={serviceOptions}
-          value={state.service}
-          locale={locale}
-          onPick={(id) => patch({ service: id })}
-        />
-      )
-    case "route": {
+}: Pick<StepBodyProps, "state" | "errors" | "locale" | "tx" | "patch" | "todayISO">) {
+  const [activeRaw, setActive] = useState(state.legs.length - 1)
+  const active = Math.min(activeRaw, state.legs.length - 1)
       const placeOptions = places.map((p) => ({
         ...p,
         group: tx(placeGroupLabels[p.group]),
@@ -85,9 +73,32 @@ export function StepBody({
         patch({ legs })
       }
       return (
-        <div className="space-y-5">
-          {state.legs.map((leg, i) => (
-            <div key={i} className="space-y-3 rounded-2xl bg-surface-muted/50 p-3.5">
+        <div className="space-y-3">
+          {state.legs.map((leg, i) => {
+            const hasErr = ["from", "to", "date", "time"].some((k) => errors[`${k}${i}`])
+            if (i !== active && isLegComplete(leg) && !hasErr) {
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => setActive(i)}
+                  className="flex w-full items-center gap-3 rounded-xl border border-border bg-surface-muted px-4 py-2.5 text-start transition hover:border-orange/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange/40"
+                >
+                  <span className="font-label shrink-0 text-[0.7rem] font-semibold text-orange uppercase rtl:tracking-normal">
+                    {tx(COPY.legTitle(i + 1))}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold text-ink">
+                      {placeLabel(leg.from, locale)} {locale === "ar" ? "←" : "→"} {placeLabel(leg.to, locale)}
+                    </span>
+                    <span className="block truncate text-xs text-ink-muted">{legWhen(leg, locale)}</span>
+                  </span>
+                  <span className="shrink-0 text-xs font-semibold text-ink-muted">{locale === "ar" ? "تعديل" : "Edit"}</span>
+                </button>
+              )
+            }
+            return (
+            <div key={i} className={cn("space-y-3", state.legs.length > 1 && "rounded-xl border border-orange/30 p-3.5 sm:p-4")}>
               {state.legs.length > 1 ? (
                 <div className="flex items-center justify-between gap-2">
                   <p className="font-label text-[0.7rem] font-semibold tracking-[0.14em] text-orange uppercase rtl:tracking-normal">
@@ -97,7 +108,10 @@ export function StepBody({
                     <button
                       type="button"
                       className="rounded-md px-2 py-1 text-xs font-semibold text-ink-muted hover:text-ink hover:underline"
-                      onClick={() => patch({ legs: state.legs.filter((_, j) => j !== i) })}
+                      onClick={() => {
+                        patch({ legs: state.legs.filter((_, j) => j !== i) })
+                        setActive(Math.max(0, state.legs.length - 2))
+                      }}
                     >
                       {tx(COPY.removeLeg)}
                     </button>
@@ -151,19 +165,77 @@ export function StepBody({
                 </Field>
               </div>
             </div>
-          ))}
+            )
+          })}
           <button
             type="button"
-            disabled={state.legs.length >= MAX_LEGS}
+            disabled={state.legs.length >= MAX_LEGS || !isLegComplete(state.legs[active] ?? state.legs[state.legs.length - 1])}
             className="font-label inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-orange ring-1 ring-orange/40 transition hover:bg-orange/10 disabled:cursor-not-allowed disabled:opacity-45"
-            onClick={() => patch({ legs: [...state.legs, emptyLeg(state.legs[state.legs.length - 1])] })}
+            onClick={() => {
+              patch({ legs: [...state.legs, emptyLeg(state.legs[state.legs.length - 1])] })
+              setActive(state.legs.length)
+            }}
           >
             <span aria-hidden="true">+</span>
             {tx(COPY.addLeg)}
           </button>
         </div>
       )
-    }
+}
+
+export function StepBody({
+  step,
+  state,
+  errors,
+  locale,
+  tx,
+  patch,
+  jumpTo,
+  serviceOptions,
+  isCompany,
+  needsOrg,
+  todayISO,
+  summaryRows,
+}: StepBodyProps) {
+  const inputErr = (key: string) => (errors[key] ? fieldErrorRing : "")
+
+  switch (step) {
+    case "customer":
+      return (
+        <Choices
+          options={customerOptions}
+          value={state.customer}
+          locale={locale}
+          onPick={(id) => {
+            const next = id as TripType
+            patch({
+              customer: next,
+              service:
+                (next === "company") === isCompany || !state.service ? state.service : "",
+            })
+          }}
+        />
+      )
+    case "service":
+      return (
+        <Choices
+          options={serviceOptions}
+          value={state.service}
+          locale={locale}
+          onPick={(id) => patch({ service: id })}
+        />
+      )
+    case "route":
+      return (
+        <RouteLegs
+          state={state}
+          errors={errors}
+          locale={locale}
+          tx={tx}
+          patch={patch}
+          todayISO={todayISO}
+        />
+      )
     case "passengers":
       return (
         <Field
@@ -307,7 +379,7 @@ export function StepBody({
     case "review":
       return (
         <div className="space-y-4">
-          <dl className="divide-y divide-border rounded-xl bg-surface-muted/60 text-sm">
+          <dl className="divide-y divide-border text-sm">
             {summaryRows().map((row) => (
               <div
                 key={row.id + row.value}
@@ -329,8 +401,8 @@ export function StepBody({
           </dl>
           <label
             className={cn(
-              "flex items-start gap-3 rounded-xl px-3.5 py-3 text-sm text-ink/70",
-              errors.consent ? "bg-red-50 ring-2 ring-red-400/40 dark:bg-red-950/40" : "bg-surface-muted/60",
+              "flex items-start gap-3 px-1 py-3 text-sm text-ink/70",
+              errors.consent ? "bg-red-50 ring-2 ring-red-400/40 dark:bg-red-950/40" : "border-y border-border",
             )}
           >
             <input

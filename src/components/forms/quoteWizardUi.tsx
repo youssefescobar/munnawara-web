@@ -1,11 +1,11 @@
 import { cn } from "@/lib/cn"
-import type { ReactNode } from "react"
+import type { CSSProperties, ReactNode } from "react"
 import { pick, type Option, type PlaceId } from "./quoteWizardConfig"
 import { Dropdown } from "./QuoteFields"
 import { CheckBadge, choiceIcon } from "./QuoteChoiceIcons"
 
 export const fieldClass =
-  "w-full min-w-0 rounded-xl border border-border bg-surface-muted px-4 py-3.5 text-base text-ink outline-none transition placeholder:text-ink-muted focus:border-orange/40 focus:bg-surface-elevated focus:ring-2 focus:ring-orange/25 sm:text-[0.9375rem]"
+  "w-full min-w-0 rounded-xl border border-border bg-surface-muted px-4 py-3 text-base text-ink outline-none transition placeholder:text-ink-muted focus:border-orange/40 focus:bg-surface-elevated focus:ring-2 focus:ring-orange/25 sm:text-[0.9375rem]"
 export const fieldErrorRing = "ring-2 ring-red-400/50 focus:ring-red-400/60 bg-red-50/60 dark:bg-red-950/40"
 export const btnPrimary =
   "font-label inline-flex min-w-[9.5rem] items-center justify-center rounded-full bg-gradient-to-b from-orange-soft to-orange px-8 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_-10px_rgb(243,112,33,0.9)] transition-[transform,filter,box-shadow] duration-100 ease-out hover:brightness-[1.03] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-45 disabled:shadow-none disabled:hover:brightness-100 disabled:active:scale-100 motion-reduce:transition-none motion-reduce:active:scale-100"
@@ -59,10 +59,12 @@ export function Choices({
   return (
     <div
       className={cn(
-        "grid gap-2.5",
-        columns === 2 && "grid-cols-1 @sm:grid-cols-2",
+        columns === 2
+          ? "grid grid-cols-1 lg:flex lg:flex-wrap lg:gap-3"
+          : "grid",
       )}
       role="radiogroup"
+      style={{ "--cols": options.length < 5 ? options.length : Math.ceil(options.length / 2) } as CSSProperties}
     >
       {options.map((o) => {
         const selected = value === o.id
@@ -74,16 +76,16 @@ export function Choices({
             aria-checked={selected}
             onClick={() => onPick(o.id)}
             className={cn(
-              "relative flex items-start gap-3 rounded-2xl border px-3.5 py-3.5 text-start transition-[transform,border-color,background-color,box-shadow] duration-100 ease-out active:scale-[0.98] motion-reduce:transition-none motion-reduce:active:scale-100 sm:px-4",
+              "relative flex items-center gap-3.5 border-b border-border px-2 py-2 text-start transition-[transform,border-color,background-color,box-shadow] duration-100 ease-out motion-reduce:transition-none sm:py-3.5 lg:min-h-[clamp(4.5rem,13vh,12rem)] lg:grow lg:basis-[calc((100%-(var(--cols)-1)*0.75rem)/var(--cols))] lg:rounded-2xl lg:border lg:px-5 lg:py-4 lg:active:scale-[0.98]",
               selected
-                ? "border-orange bg-orange/5 shadow-[0_0_0_3px_rgb(243,112,33,0.14)]"
-                : "border-transparent bg-surface-muted text-ink hover:border-border hover:bg-surface-container",
+                ? "border-b-orange bg-orange/8 lg:border-orange lg:bg-orange/5 lg:shadow-[0_0_0_3px_rgb(243,112,33,0.14)]"
+                : "text-ink hover:bg-surface-muted lg:border-transparent lg:bg-surface-muted lg:hover:border-border lg:hover:bg-surface-container",
             )}
           >
             {selected ? <CheckBadge /> : null}
             <span
               className={cn(
-                "mt-0.5 inline-flex size-9 shrink-0 items-center justify-center rounded-full",
+                "inline-flex size-9 shrink-0 sm:size-10 items-center justify-center rounded-full",
                 selected
                   ? "bg-orange/15 text-orange"
                   : "bg-surface-elevated text-ink-muted ring-1 ring-border",
@@ -92,11 +94,11 @@ export function Choices({
               {choiceIcon(o.id)}
             </span>
             <span className="min-w-0 pe-5">
-              <span className="block text-sm font-semibold text-ink">
+              <span className="block text-base font-semibold text-ink lg:text-lg">
                 {pick(o.label, locale)}
               </span>
               {o.hint ? (
-                <span className="mt-0.5 block text-xs leading-snug text-ink-muted">
+                <span className={cn("block text-sm leading-snug text-ink-muted", options.length > 5 && "hidden sm:block")}>
                   {pick(o.hint, locale)}
                 </span>
               ) : null}

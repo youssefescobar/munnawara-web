@@ -139,7 +139,7 @@ export const choiceIcon = (id: string): ReactNode => {
 export const CheckBadge = () => (
   <span
     aria-hidden
-    className="absolute end-2 top-2 inline-flex size-5 items-center justify-center rounded-full bg-orange text-white shadow-sm"
+    className="absolute end-3 top-1/2 -translate-y-1/2 inline-flex size-5 items-center justify-center rounded-full bg-orange text-white shadow-sm"
   >
     <svg viewBox="0 0 16 16" className="size-3" fill="none" stroke="currentColor" strokeWidth="2.2">
       <path d="m3.5 8.2 2.8 2.8 6.2-6.2" strokeLinecap="round" strokeLinejoin="round" />
