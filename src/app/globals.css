@@ -577,6 +577,8 @@ body:has([data-quote-page]) main#main {
 /* thin scrollbar inside the wizard body */
 .qw-scroll { scrollbar-width: thin; scrollbar-color: var(--brand-border) transparent; padding-inline: 0.25rem 0.4rem; padding-block: 0.25rem 0.25rem; }
 
+/* Floating buttons are hidden here, so drop the room main reserves for them. */
+body:has([data-quote-page]) main#main { padding-bottom: env(safe-area-inset-bottom); }
 /* Chat / WhatsApp buttons would sit on the wizard's Continue button here */
 body:has([data-quote-page]) [data-floating-actions] { display: none; }
 /* Floating chat / WhatsApp / quote chrome rests above the footer (see FloatingActions). */

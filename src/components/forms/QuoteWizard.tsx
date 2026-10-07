@@ -441,7 +441,7 @@ export const QuoteWizard = ({
         ) : null}
         </div>
 
-        <div className={split ? "flex shrink-0 flex-wrap items-center gap-2 border-t border-border pt-3" : "flex flex-wrap items-center gap-2 pt-1"}>
+        <div className={split ? "flex shrink-0 flex-wrap items-center gap-2 border-t border-border pt-3 pb-3" : "flex flex-wrap items-center gap-2 pt-1"}>
           {stepIndexSafe > 0 ? (
             <button type="button" className={btnGhost} onClick={goBack}>
               {tx(COPY.back)}
