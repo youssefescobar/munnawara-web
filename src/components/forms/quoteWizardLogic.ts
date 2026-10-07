@@ -19,7 +19,7 @@ export type SummaryRow = { id: StepId; label: L10n; value: string }
 export function computeSteps(isCompany: boolean): StepId[] {
   const list: StepId[] = ["customer"]
   if (isCompany) list.push("service")
-  list.push("route", "passengers", "vehicle", "extras", "contact", "review")
+  list.push("route", "vehicle", "passengers", "extras", "contact", "review")
   return list
 }
 
@@ -218,14 +218,14 @@ export function buildSummaryRows(
     { id: "service", label: COPY.summary.service, value: getServiceLabel(state, serviceOptions, tx) },
     ...legRows,
     {
-      id: "passengers",
-      label: COPY.summary.passengers,
-      value: state.passengers,
-    },
-    {
       id: "vehicle",
       label: COPY.summary.vehicle,
       value: `${state.busCount} × ${tx(findOption(busClassOptions, state.busClass)!.label)}`,
+    },
+    {
+      id: "passengers",
+      label: COPY.summary.passengers,
+      value: state.passengers,
     },
     ...(state.notes.trim()
       ? [{ id: "extras" as StepId, label: COPY.summary.extras, value: state.notes.trim() }]

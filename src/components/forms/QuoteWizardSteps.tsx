@@ -166,46 +166,22 @@ export function StepBody({
     }
     case "passengers":
       return (
-        <div className="grid grid-cols-1 gap-3.5 @lg:grid-cols-2">
-          <Field
-            label={tx(COPY.fields.passengers)}
-            htmlFor="qw-pax"
+        <Field
+          label={tx(COPY.fields.passengers)}
+          htmlFor="qw-pax"
+          error={errors.passengers}
+        >
+          <NumberStepper
+            id="qw-pax"
+            locale={locale}
+            min={1}
+            max={500}
+            step={1}
             error={errors.passengers}
-          >
-            <NumberStepper
-              id="qw-pax"
-              locale={locale}
-              min={1}
-              max={500}
-              step={1}
-              error={errors.passengers}
-              value={state.passengers}
-              onChange={(v) => patch({ passengers: v })}
-            />
-          </Field>
-          <Field label={tx(COPY.fields.luggage)} htmlFor="qw-luggage">
-            <input
-              id="qw-luggage"
-              name="luggage"
-              className={fieldClass}
-              value={state.luggage}
-              onChange={(e) => patch({ luggage: e.target.value })}
-            />
-          </Field>
-          <Field
-            label={tx(COPY.fields.accessibility)}
-            htmlFor="qw-access"
-            className="@lg:col-span-2"
-          >
-            <input
-              id="qw-access"
-              name="access"
-              className={fieldClass}
-              value={state.accessibility}
-              onChange={(e) => patch({ accessibility: e.target.value })}
-            />
-          </Field>
-        </div>
+            value={state.passengers}
+            onChange={(v) => patch({ passengers: v })}
+          />
+        </Field>
       )
     case "vehicle":
       return (
@@ -236,6 +212,26 @@ export function StepBody({
     case "extras":
       return (
         <div className="space-y-4">
+          <div className="grid grid-cols-1 gap-3.5 @lg:grid-cols-2">
+            <Field label={tx(COPY.fields.luggage)} htmlFor="qw-luggage">
+              <input
+                id="qw-luggage"
+                name="luggage"
+                className={fieldClass}
+                value={state.luggage}
+                onChange={(e) => patch({ luggage: e.target.value })}
+              />
+            </Field>
+            <Field label={tx(COPY.fields.accessibility)} htmlFor="qw-access">
+              <input
+                id="qw-access"
+                name="access"
+                className={fieldClass}
+                value={state.accessibility}
+                onChange={(e) => patch({ accessibility: e.target.value })}
+              />
+            </Field>
+          </div>
           <Field label={tx(COPY.fields.notes)} htmlFor="qw-notes">
             <textarea
               id="qw-notes"
