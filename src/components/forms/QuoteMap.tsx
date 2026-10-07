@@ -182,7 +182,10 @@ export default function QuoteMap({ stops, context = [], locale, className, still
     const all = [...stops, ...context]
     if (all.length) {
       boundsRef.current = L.latLngBounds(all.map((s) => [s.lat, s.lng] as LatLng))
-      map.fitBounds(boundsRef.current, { padding: [36, 36], maxZoom: 12 })
+      // Animated: zoom slowly onto one point, pull back to frame several.
+      const opts = { padding: [36, 36] as [number, number], maxZoom: stops.length < 2 ? 11 : 12 }
+      if (still) map.fitBounds(boundsRef.current, opts)
+      else map.flyToBounds(boundsRef.current, { ...opts, duration: 1.8 })
     }
 
     if (stops.length < 2) return () => controller.abort()

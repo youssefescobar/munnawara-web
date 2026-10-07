@@ -393,7 +393,9 @@ html:has(.dam-landing) body {
 
 /* Quote wizard map (Leaflet) */
 .qmap { height: 21rem; width: 100%; border-radius: 0.75rem; overflow: hidden; z-index: 0; }
+.qmap { direction: ltr; } /* Leaflet positions panes with left/translate; RTL ancestors misplace tooltips */
 .qmap .leaflet-container { font-family: inherit; }
+.qmap-tip { unicode-bidi: plaintext; }
 .qmap-pin-wrap { background: none; border: 0; }
 .qmap-pin {
   display: grid; place-items: center; width: 26px; height: 26px; border-radius: 9999px;

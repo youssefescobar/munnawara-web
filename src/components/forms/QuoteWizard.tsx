@@ -231,13 +231,19 @@ export const QuoteWizard = ({
           className={cn("qw-split text-start", className)}
         >
           <aside className="qw-split__map" aria-label={isAr ? "الخريطة" : "Route map"}>
-            <QuoteMap
-              stops={view.stops}
-              context={view.context}
-              locale={locale}
-              still={reducedMotion}
-              className="qmap qmap--fill"
-            />
+            {view.stops.length ? (
+              <QuoteMap
+                stops={view.stops}
+                context={view.context}
+                locale={locale}
+                still={reducedMotion}
+                className="qmap qmap--fill"
+              />
+            ) : (
+              <div className="grid h-full place-items-center bg-surface-muted/60">
+                <GlobeVisual className="size-24 opacity-80" />
+              </div>
+            )}
             {heading ? (
               <div className="qw-split__chip">
                 {heading.eyebrow ? (
@@ -329,7 +335,7 @@ export const QuoteWizard = ({
   const showGlobe = step === "customer" || step === "service"
   const showRoute = step === "route"
 
-  const mapData = showRoute && !split ? mapView() : null
+  const mapData = showRoute && !split && mapView().stops.length ? mapView() : null
 
   const body = (
     <StepBody

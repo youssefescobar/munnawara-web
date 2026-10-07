@@ -1,5 +1,4 @@
 import {
-  allHubStops,
   buildTransferStops,
   busClassOptions,
   customerOptions,
@@ -38,13 +37,9 @@ const legPlaces = (state: WizardState): PlaceId[] => {
   return ids
 }
 
-/** Stops drawn on the map: the chosen places in order, or faint hubs while empty. */
+/** Stops drawn on the map: only the places chosen so far, in order. */
 export function getMapView(state: WizardState): MapView {
-  const ids = legPlaces(state)
-  return {
-    stops: buildTransferStops(ids),
-    context: ids.length < 2 ? allHubStops().filter((h) => !ids.includes(h.id as PlaceId)) : [],
-  }
+  return { stops: buildTransferStops(legPlaces(state)), context: [] }
 }
 
 /** Final route for the confirmation map. */
