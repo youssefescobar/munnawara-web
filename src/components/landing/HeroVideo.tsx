@@ -21,7 +21,7 @@ type HeroVideoProps = {
   reducedMotion: boolean
 }
 
-const VIDEO_SRC = "/hero/backvid.mp4"
+const VIDEO_SRC = "/hero/hero-new.mp4"
 
 export const HeroVideo = forwardRef<HeroVideoHandle, HeroVideoProps>(
   function HeroVideo({ reducedMotion }, ref) {

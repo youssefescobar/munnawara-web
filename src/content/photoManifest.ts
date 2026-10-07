@@ -56,8 +56,8 @@ export const photoManifest: readonly PhotoEntry[] = [
     "id": "exterior-0427",
     "category": "exterior",
     "src": "/photos/exterior/0427.webp",
-    "width": 1920,
-    "height": 1280
+    "width": 2528,
+    "height": 1684
   },
   {
     "id": "exterior-0441",
