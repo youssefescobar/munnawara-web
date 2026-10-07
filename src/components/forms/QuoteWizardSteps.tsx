@@ -119,7 +119,7 @@ function RouteLegs({
                 </div>
               ) : null}
               {/* DOM order From, To, Date, Time: the page direction puts From on the right in Arabic. */}
-              <div className="grid grid-cols-1 gap-3.5 @lg:grid-cols-2">
+              <div className="grid grid-cols-2 gap-x-2.5 gap-y-2 sm:gap-x-3.5 sm:gap-y-3.5">
                 <Field label={tx(COPY.fields.from)} htmlFor={`qw-from-${i}`} error={errors[`from${i}`]}>
                   <PlaceSelect
                     id={`qw-from-${i}`}
@@ -170,7 +170,7 @@ function RouteLegs({
           <button
             type="button"
             disabled={state.legs.length >= MAX_LEGS || !isLegComplete(state.legs[active] ?? state.legs[state.legs.length - 1])}
-            className="font-label inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold text-orange ring-1 ring-orange/40 transition hover:bg-orange/10 disabled:cursor-not-allowed disabled:opacity-45"
+            className="font-label inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold text-orange ring-1 ring-orange/40 transition hover:bg-orange/10 disabled:cursor-not-allowed disabled:opacity-45"
             onClick={() => {
               patch({ legs: [...state.legs, emptyLeg(state.legs[state.legs.length - 1])] })
               setActive(state.legs.length)
@@ -284,7 +284,7 @@ export function StepBody({
     case "extras":
       return (
         <div className="space-y-4">
-          <div className="grid grid-cols-1 gap-3.5 @lg:grid-cols-2">
+          <div className="grid grid-cols-2 gap-x-2.5 gap-y-2 sm:gap-x-3.5 sm:gap-y-3.5">
             <Field label={tx(COPY.fields.luggage)} htmlFor="qw-luggage">
               <input
                 id="qw-luggage"
@@ -317,7 +317,7 @@ export function StepBody({
       )
     case "contact":
       return (
-        <div className="grid grid-cols-1 gap-3.5 @lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2.5 sm:gap-3.5 @lg:grid-cols-2">
           <Field
             label={tx(COPY.fields.name)}
             htmlFor="qw-name"

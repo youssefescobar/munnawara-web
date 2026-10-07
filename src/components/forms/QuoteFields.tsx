@@ -21,7 +21,7 @@ import { createPortal } from "react-dom"
 /* -------------------------------------------------------------------------- */
 
 export const triggerClass =
-  "flex w-full min-w-0 items-center justify-between gap-3 rounded-xl border border-border bg-surface-muted px-4 py-3 text-start text-base text-ink outline-none transition hover:border-orange/30 focus-visible:border-orange/50 focus-visible:bg-surface-elevated focus-visible:ring-2 focus-visible:ring-orange/25 sm:text-[0.9375rem]"
+  "flex w-full min-w-0 items-center justify-between gap-3 rounded-xl border border-border bg-surface-muted px-3 py-1.5 text-start text-base text-ink sm:px-4 sm:py-3 outline-none transition hover:border-orange/30 focus-visible:border-orange/50 focus-visible:bg-surface-elevated focus-visible:ring-2 focus-visible:ring-orange/25 sm:text-[0.9375rem]"
 
 const errorRing = "ring-2 ring-red-400/50 bg-red-50/60 dark:bg-red-950/40"
 
@@ -811,7 +811,7 @@ export function NumberStepper({
         placeholder={placeholder}
         aria-invalid={error ? true : undefined}
         className={cn(
-          "min-w-0 flex-1 rounded-xl border border-border bg-surface-muted px-3 py-3 text-center text-base font-semibold tabular-nums text-ink outline-none transition placeholder:font-normal placeholder:text-ink-muted focus:border-orange/50 focus:bg-surface-elevated focus:ring-2 focus:ring-orange/25",
+          "min-w-0 flex-1 rounded-xl border border-border bg-surface-muted px-3 py-1.5 text-center text-base font-semibold sm:py-3 tabular-nums text-ink outline-none transition placeholder:font-normal placeholder:text-ink-muted focus:border-orange/50 focus:bg-surface-elevated focus:ring-2 focus:ring-orange/25",
           error && errorRing,
         )}
         value={value}

@@ -483,7 +483,7 @@ body:has([data-quote-page]) main#main {
   gap: var(--qp-gap);
   height: 100%;
   /* phones & portrait tablets: map on top, wizard below */
-  grid-template-rows: clamp(9rem, 30%, 20rem) minmax(0, 1fr);
+  grid-template-rows: clamp(6.5rem, 22%, 20rem) minmax(0, 1fr);
   grid-template-columns: minmax(0, 1fr);
 }
 /* desktop, tablets landscape, and short landscape phones: map left, wizard right */

@@ -480,10 +480,12 @@ export const DamLanding = ({ copy }: DamLandingProps) => {
       const logoPetals = Array.from(elements.logo.querySelectorAll<SVGGElement>(".petal"))
       const GRAY = "grayscale(1) brightness(1.15)"
       const COLOR = "grayscale(0) brightness(1)"
-      gsap.set([...petalFlights, ...logoPetals], { filter: GRAY })
+      // Phones keep the petals in colour from the start: the grey-to-colour filter wave is skipped on iOS.
+      const skipColorize = window.matchMedia("(max-width: 767px)").matches
+      gsap.set([...petalFlights, ...logoPetals], { filter: skipColorize ? "none" : GRAY })
       let colorize: gsap.core.Timeline | null = null
       const startColorize = () => {
-        if (colorize) return
+        if (colorize || skipColorize) return
         colorize = gsap.timeline().to(logoPetals, {
           filter: COLOR,
           duration: motion.loader.colorDuration,

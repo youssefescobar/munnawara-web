@@ -265,7 +265,7 @@ export const QuoteWizard = ({
           </aside>
           <section className="qw-split__panel">
             {heading && !view.stops.length ? (
-              <h1 className="font-display mb-3 shrink-0 text-lg font-semibold text-ink sm:text-xl">{heading.title}</h1>
+              <h1 className="font-display mb-1 shrink-0 text-base sm:mb-3 font-semibold text-ink sm:text-xl">{heading.title}</h1>
             ) : null}
             {children}
           </section>
@@ -373,7 +373,7 @@ export const QuoteWizard = ({
 
   return shell(
     <>
-      <div className={split ? "mb-4 shrink-0" : "mb-5"}>
+      <div className={split ? "mb-2 shrink-0 sm:mb-4" : "mb-5"}>
         <StepProgress
           current={stepIndexSafe + 1}
           total={steps.length}
@@ -393,9 +393,9 @@ export const QuoteWizard = ({
         className={split ? "flex min-h-0 flex-1 flex-col gap-3" : "space-y-5"}
       >
         <div data-lenis-prevent className={split ? "qw-scroll @container min-h-0 flex-1 overflow-y-auto overscroll-contain" : "@container space-y-5"}>
-        <div key={step} className={cn("qw-step space-y-4", dir === "fwd" ? "qw-step--fwd" : "qw-step--back")}>
+        <div key={step} className={cn("qw-step space-y-3 sm:space-y-4", dir === "fwd" ? "qw-step--fwd" : "qw-step--back")}>
           <div className="flex items-center gap-3">
-            <h2 className="font-display text-xl leading-snug font-semibold text-balance text-ink sm:text-2xl">
+            <h2 className="font-display text-lg leading-snug font-semibold text-balance text-ink sm:text-2xl">
               {tx(COPY.titles[step])}
             </h2>
           </div>
@@ -441,7 +441,7 @@ export const QuoteWizard = ({
         ) : null}
         </div>
 
-        <div className={split ? "flex shrink-0 flex-wrap items-center gap-2 border-t border-border pt-3 pb-3" : "flex flex-wrap items-center gap-2 pt-1"}>
+        <div className={split ? "flex shrink-0 flex-wrap items-center gap-2 border-t border-border pt-2 pb-2 sm:pt-3 sm:pb-3" : "flex flex-wrap items-center gap-2 pt-1"}>
           {stepIndexSafe > 0 ? (
             <button type="button" className={btnGhost} onClick={goBack}>
               {tx(COPY.back)}

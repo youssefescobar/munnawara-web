@@ -5,12 +5,12 @@ import { Dropdown } from "./QuoteFields"
 import { CheckBadge, choiceIcon } from "./QuoteChoiceIcons"
 
 export const fieldClass =
-  "w-full min-w-0 rounded-xl border border-border bg-surface-muted px-4 py-3 text-base text-ink outline-none transition placeholder:text-ink-muted focus:border-orange/40 focus:bg-surface-elevated focus:ring-2 focus:ring-orange/25 sm:text-[0.9375rem]"
+  "w-full min-w-0 rounded-xl border border-border bg-surface-muted px-3 py-1.5 text-base text-ink outline-none transition sm:px-4 sm:py-3 placeholder:text-ink-muted focus:border-orange/40 focus:bg-surface-elevated focus:ring-2 focus:ring-orange/25 sm:text-[0.9375rem]"
 export const fieldErrorRing = "ring-2 ring-red-400/50 focus:ring-red-400/60 bg-red-50/60 dark:bg-red-950/40"
 export const btnPrimary =
-  "font-label inline-flex min-w-[9.5rem] items-center justify-center rounded-full bg-gradient-to-b from-orange-soft to-orange px-8 py-3 text-sm font-semibold text-white shadow-[0_12px_28px_-10px_rgb(243,112,33,0.9)] transition-[transform,filter,box-shadow] duration-100 ease-out hover:brightness-[1.03] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-45 disabled:shadow-none disabled:hover:brightness-100 disabled:active:scale-100 motion-reduce:transition-none motion-reduce:active:scale-100"
+  "font-label inline-flex min-w-[8rem] items-center justify-center rounded-full bg-gradient-to-b from-orange-soft to-orange px-6 py-2.5 text-sm sm:min-w-[9.5rem] sm:px-8 sm:py-3 font-semibold text-white shadow-[0_12px_28px_-10px_rgb(243,112,33,0.9)] transition-[transform,filter,box-shadow] duration-100 ease-out hover:brightness-[1.03] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-45 disabled:shadow-none disabled:hover:brightness-100 disabled:active:scale-100 motion-reduce:transition-none motion-reduce:active:scale-100"
 export const btnGhost =
-  "font-label inline-flex items-center justify-center rounded-full px-5 py-3 text-sm font-semibold text-ink-muted transition-[transform,background-color,color] duration-100 ease-out hover:bg-surface-muted hover:text-ink active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
+  "font-label inline-flex items-center justify-center rounded-full px-4 py-2.5 text-sm font-semibold text-ink-muted sm:px-5 sm:py-3 transition-[transform,background-color,color] duration-100 ease-out hover:bg-surface-muted hover:text-ink active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
 
 export function Field({
   label,
@@ -29,7 +29,7 @@ export function Field({
     <div className={cn("block min-w-0", className)}>
       <label
         htmlFor={htmlFor}
-        className="font-label mb-1.5 block text-[0.7rem] font-semibold tracking-[0.14em] text-ink-muted uppercase"
+        className="font-label mb-1 block text-[0.7rem] font-semibold tracking-[0.14em] text-ink-muted uppercase"
       >
         {label}
       </label>
@@ -126,8 +126,8 @@ export function StepProgress({
   toolbar?: ReactNode
 }) {
   return (
-    <div className="space-y-2.5">
-      <div className="flex min-h-11 items-center justify-between gap-3">
+    <div className="space-y-1.5 sm:space-y-2.5">
+      <div className="flex min-h-8 items-center justify-between gap-3 sm:min-h-11">
         {toolbar ?? <span />}
         <p className="font-label shrink-0 text-xs font-semibold text-ink-muted tabular-nums">
           {counter}
