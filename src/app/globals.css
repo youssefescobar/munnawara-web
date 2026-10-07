@@ -4,39 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@media (hover: hover) and (pointer: fine) and (forced-colors: none) {
-  @layer base {
-    html {
-      --site-cursor: url("/brand/cursor-text.svg") 5 4, auto;
-      --site-cursor-action: url("/brand/cursor-link.svg") 14 4, pointer;
-      cursor: var(--site-cursor);
-    }
-
-    @supports (cursor: image-set(url("/brand/cursor-text.svg") 1x) 5 4, auto) {
-      html {
-        --site-cursor: image-set(url("/brand/cursor-text.svg") 1x, url("/brand/cursor-text-4x.svg") 4x) 5 4, auto;
-        --site-cursor-action: image-set(url("/brand/cursor-link.svg") 1x, url("/brand/cursor-link-4x.svg") 4x) 14 4, pointer;
-      }
-    }
-
-    :where(input, textarea, select, [contenteditable]:not([contenteditable="false"]), iframe, video[controls], audio[controls], [data-native-cursor]) {
-      cursor: auto;
-    }
-
-    :where(:disabled, [aria-disabled="true"]) {
-      cursor: not-allowed;
-    }
-
-    :where([draggable="true"]) {
-      cursor: grab;
-    }
-  }
-
-  html body :is(a[href], button, summary, [role="button"], label[for], .cursor-pointer):not(:where(:disabled, [aria-disabled="true"], [aria-busy="true"], [draggable="true"], [data-draggable], [data-dragging], [data-disabled], [class*="cursor-grab"], [data-native-cursor], [data-native-cursor] *, .leaflet-container *, .is-loading *, .is-transitioning *, .is-page-transitioning *)) {
-    cursor: var(--site-cursor-action);
-  }
-}
-
 /* Hide native scrollbar sitewide (same as home / dam-landing). */
 html {
   scrollbar-width: none;

@@ -1607,58 +1607,6 @@ a[data-whatsapp-fab] {
   direction: ltr;
 }
 
-.loader-status__bar {
-  position: absolute;
-  inset-inline: -1.6rem;
-  top: calc(100% + 0.9rem);
-  height: 3px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: rgba(245, 239, 232, 0.12);
-}
-
-.loader-status__bar::after {
-  content: '';
-  position: absolute;
-  inset-block: 0;
-  inset-inline-start: 0;
-  width: 42%;
-  border-radius: inherit;
-  background: linear-gradient(90deg, transparent, var(--brand-orange), var(--brand-blue), transparent);
-  box-shadow: 0 0 10px 1px rgba(243, 112, 33, 0.55);
-  animation: loader-sweep 1.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
-}
-
-@keyframes loader-sweep {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(240%);
-  }
-}
-
-html[dir='rtl'] .loader-status__bar::after {
-  animation-name: loader-sweep-rtl;
-}
-
-@keyframes loader-sweep-rtl {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(-240%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .loader-status__bar::after {
-    animation: none;
-    width: 100%;
-    opacity: 0.5;
-  }
-}
-
 .loader-status--ar {
   direction: rtl;
   gap: 0;
@@ -2975,4 +2923,37 @@ body.is-transitioning::before {
     -webkit-mask-image: linear-gradient(to left, transparent 0%, #000 14%, #000 100%);
     mask-image: linear-gradient(to left, transparent 0%, #000 14%, #000 100%);
   }
+}
+
+/* Light mode loader: light plate, dark text. Dark mode keeps the dark plate above. */
+html:not(.dark):has(body.is-loading),
+html:not(.dark) body.is-loading {
+  background: #faf6f1;
+}
+
+html:not(.dark) .loader-surface {
+  background:
+    radial-gradient(circle at 50% 44%, rgba(151, 36, 143, 0.08), transparent 30%),
+    radial-gradient(circle at 43% 51%, rgba(247, 91, 18, 0.1), transparent 34%),
+    #faf6f1;
+  color-scheme: light;
+}
+
+html:not(.dark) .logo-route-transition__backdrop {
+  background:
+    radial-gradient(circle at 50% 44%, rgba(151, 36, 143, 0.08), transparent 30%),
+    radial-gradient(circle at 43% 51%, rgba(247, 91, 18, 0.1), transparent 34%),
+    #faf6f1;
+}
+
+html:not(.dark) .loader-status {
+  color: rgba(28, 22, 18, 0.6);
+}
+
+html:not(.dark) .loader-brand {
+  color: rgba(28, 22, 18, 0.88);
+}
+
+html:not(.dark) .loader-brand__acronym {
+  color: var(--brand-orange);
 }

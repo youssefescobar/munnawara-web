@@ -993,7 +993,6 @@ export const DamLanding = ({ copy }: DamLandingProps) => {
               {letter}
             </span>
           ))}
-          <span className="loader-status__bar" aria-hidden="true" />
         </div>
         <div
           className={`loader-brand${locale === "ar" ? " loader-brand--ar" : ""}`}
