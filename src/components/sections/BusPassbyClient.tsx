@@ -108,7 +108,7 @@ export const BusPassbyClient = ({
           {eyebrow}
         </p>
 
-        <div className="pointer-events-none absolute inset-x-0 top-[38%] z-30 flex md:z-10 w-full -translate-y-1/2 justify-center px-4 md:top-1/2 md:px-10">
+        <div className="pointer-events-none absolute inset-x-0 top-1/2 z-10 flex w-full -translate-y-1/2 justify-center px-4 md:px-10">
           {reduced ? (
             <div className="mx-auto w-full max-w-4xl space-y-3 text-center">
               <h2 className={titleClass} dir={isRtl ? "rtl" : "ltr"}>
@@ -137,7 +137,7 @@ export const BusPassbyClient = ({
 
         <div
           ref={busRef}
-          className="pointer-events-none absolute inset-x-0 top-[58%] z-20 flex -translate-y-1/2 justify-center will-change-transform md:top-1/2"
+          className="pointer-events-none absolute inset-x-0 top-1/2 z-20 flex -translate-y-1/2 justify-center will-change-transform"
           aria-hidden
         >
           <div
