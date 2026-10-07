@@ -34,6 +34,7 @@ export const COPY = {
   back: { en: "Back", ar: "رجوع" },
   submit: { en: "Send request", ar: "إرسال الطلب" },
   sending: { en: "Sending…", ar: "جارٍ الإرسال…" },
+  saveChanges: { en: "Save changes", ar: "حفظ التعديلات" },
   edit: { en: "Edit", ar: "تعديل" },
   error: {
     en: "Something went wrong. Please try again or contact us on WhatsApp.",
@@ -104,6 +105,11 @@ export const COPY = {
       ar: "هذا ليس تأكيد حجز. الأسعار والتوافر تؤكد فقط في العرض الرسمي.",
     },
     another: { en: "Start another request", ar: "طلب جديد" },
+    edit: { en: "Edit request", ar: "تعديل الطلب" },
+    locked: {
+      en: "Our team has already started on this request, so it can no longer be edited here. Please contact us to change it.",
+      ar: "بدأ فريقنا بالعمل على هذا الطلب، لذا لم يعد التعديل متاحاً هنا. يرجى التواصل معنا لإجراء أي تغيير.",
+    },
   },
   summary: {
     who: { en: "Customer", ar: "العميل" },

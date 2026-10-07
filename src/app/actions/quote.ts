@@ -10,6 +10,8 @@ export type QuoteActionState = {
   messageKey: "success" | "error"
   leadId?: string
   quoteSlaHours?: number
+  quoteId?: string
+  editToken?: string
 }
 
 const BACKEND_TIMEOUT_MS = 15_000
@@ -28,6 +30,72 @@ function backendBaseUrl() {
   ).replace(/\/$/, "")
 }
 
+const extrasOf = (data: QuoteRequestInput) =>
+  [
+    data.needsSupervisors ? "Supervisors" : "",
+    data.needsTracking ? "Tracking" : "",
+    data.needsBranding ? "Bus branding" : "",
+    data.needsAirportReception ? "Airport reception" : "",
+    data.specialRequirements,
+  ]
+    .filter(Boolean)
+    .join("; ")
+
+function backendBody(data: QuoteRequestInput) {
+  const extras = extrasOf(data)
+  return {
+    customerName: data.customerName,
+    customerContact: data.phone,
+    customerPhone: data.phone,
+    customerEmail: data.email || undefined,
+    email: data.email || undefined,
+    pickup: data.pickup,
+    dropoff: data.destination,
+    date: data.date,
+    returnDatetime: data.returnDate || undefined,
+    vehicleType: data.busClass || "standard",
+    busClass: data.busClass || "standard",
+    passengers: data.passengers,
+    busCount: data.busCount || 1,
+    channel: "web",
+    language: data.language,
+    customerType: data.tripType,
+    tripType: data.serviceType || data.tripType,
+    organization: data.organization || undefined,
+    serviceType: data.serviceType || data.tripType,
+    originCity: data.pickup,
+    destinationCity: data.destination,
+    stops: data.stops || undefined,
+    legs: data.legs.length ? data.legs : undefined,
+    departureTime: data.departureTime || undefined,
+    waitingHours: data.waitingHours ?? undefined,
+    accessibilityNeeds: data.accessibilityNeeds || undefined,
+    luggageNotes: data.luggageNotes || undefined,
+    specialRequirements: extras || undefined,
+    needsSupervisors: data.needsSupervisors,
+    needsTracking: data.needsTracking,
+    needsBranding: data.needsBranding,
+    needsAirportReception: data.needsAirportReception,
+    preferredContactChannel: "whatsapp",
+    consent: data.consent,
+    notes: [
+      data.serviceType ? `Service: ${data.serviceType}` : "",
+      data.stops ? `Stops: ${data.stops}` : "",
+      data.departureTime ? `Time: ${data.departureTime}` : "",
+      data.waitingHours != null
+        ? `Waiting hours: ${data.waitingHours}`
+        : "",
+      extras ? `Requirements: ${extras}` : "",
+      data.accessibilityNeeds
+        ? `Accessibility: ${data.accessibilityNeeds}`
+        : "",
+      data.luggageNotes ? `Luggage: ${data.luggageNotes}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n"),
+  }
+}
+
 export const submitQuoteRequest = async (
   raw: QuoteRequestInput,
 ): Promise<QuoteActionState> => {
@@ -44,17 +112,9 @@ export const submitQuoteRequest = async (
   const data = parsed.data
   const base = backendBaseUrl()
   let leadId: string | undefined
+  let quoteId: string | undefined
+  let editToken: string | undefined
   let quoteSlaHours = 24
-
-  const extras = [
-    data.needsSupervisors ? "Supervisors" : "",
-    data.needsTracking ? "Tracking" : "",
-    data.needsBranding ? "Bus branding" : "",
-    data.needsAirportReception ? "Airport reception" : "",
-    data.specialRequirements,
-  ]
-    .filter(Boolean)
-    .join("; ")
 
   if (base) {
     try {
@@ -62,57 +122,7 @@ export const submitQuoteRequest = async (
         method: "POST",
         headers: { "Content-Type": "application/json" },
         signal: AbortSignal.timeout(BACKEND_TIMEOUT_MS),
-        body: JSON.stringify({
-          customerName: data.customerName,
-          customerContact: data.phone,
-          customerPhone: data.phone,
-          customerEmail: data.email || undefined,
-          email: data.email || undefined,
-          pickup: data.pickup,
-          dropoff: data.destination,
-          date: data.date,
-          returnDatetime: data.returnDate || undefined,
-          vehicleType: data.busClass || "standard",
-          busClass: data.busClass || "standard",
-          passengers: data.passengers,
-          busCount: data.busCount || 1,
-          channel: "web",
-          language: data.language,
-          customerType: data.tripType,
-          tripType: data.serviceType || data.tripType,
-          organization: data.organization || undefined,
-          serviceType: data.serviceType || data.tripType,
-          originCity: data.pickup,
-          destinationCity: data.destination,
-          stops: data.stops || undefined,
-          legs: data.legs.length ? data.legs : undefined,
-          departureTime: data.departureTime || undefined,
-          waitingHours: data.waitingHours ?? undefined,
-          accessibilityNeeds: data.accessibilityNeeds || undefined,
-          luggageNotes: data.luggageNotes || undefined,
-          specialRequirements: extras || undefined,
-          needsSupervisors: data.needsSupervisors,
-          needsTracking: data.needsTracking,
-          needsBranding: data.needsBranding,
-          needsAirportReception: data.needsAirportReception,
-          preferredContactChannel: "whatsapp",
-          consent: data.consent,
-          notes: [
-            data.serviceType ? `Service: ${data.serviceType}` : "",
-            data.stops ? `Stops: ${data.stops}` : "",
-            data.departureTime ? `Time: ${data.departureTime}` : "",
-            data.waitingHours != null
-              ? `Waiting hours: ${data.waitingHours}`
-              : "",
-            extras ? `Requirements: ${extras}` : "",
-            data.accessibilityNeeds
-              ? `Accessibility: ${data.accessibilityNeeds}`
-              : "",
-            data.luggageNotes ? `Luggage: ${data.luggageNotes}` : "",
-          ]
-            .filter(Boolean)
-            .join("\n"),
-        }),
+        body: JSON.stringify(backendBody(data)),
       })
 
       if (!response.ok) {
@@ -124,8 +134,11 @@ export const submitQuoteRequest = async (
         leadId?: string
         quoteSlaHours?: number
         quote?: { _id?: string; leadId?: string }
+        editToken?: string
       }
       leadId = body.leadId || body.quote?.leadId
+      quoteId = body.quote?._id
+      editToken = body.editToken
       if (body.quoteSlaHours) quoteSlaHours = body.quoteSlaHours
     } catch (error) {
       console.error("[quote] backend submit failed", error)
@@ -180,7 +193,7 @@ export const submitQuoteRequest = async (
             `Passengers: ${data.passengers}`,
             `Buses: ${data.busCount} × ${data.busClass}`,
             `Phone: ${data.phone}`,
-            `Requirements: ${extras || "-"}`,
+            `Requirements: ${extrasOf(data) || "-"}`,
           ].join("\n"),
         }),
       })
@@ -194,5 +207,30 @@ export const submitQuoteRequest = async (
     messageKey: "success",
     leadId,
     quoteSlaHours,
+    quoteId,
+    editToken,
+  }
+}
+
+/** Re-submit an already-sent request; the backend checks the edit token and that it is still unprocessed. */
+export const updateQuoteRequest = async (
+  quoteId: string,
+  editToken: string,
+  raw: QuoteRequestInput,
+): Promise<{ ok: boolean; locked?: boolean }> => {
+  const parsed = quoteRequestSchema.safeParse(raw)
+  const base = backendBaseUrl()
+  if (!parsed.success || !base || !/^[a-f0-9]{24}$/i.test(quoteId)) return { ok: false }
+  try {
+    const response = await fetch(`${base}/quotes/${quoteId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", "x-edit-token": editToken },
+      signal: AbortSignal.timeout(BACKEND_TIMEOUT_MS),
+      body: JSON.stringify(backendBody(parsed.data)),
+    })
+    return { ok: response.ok, locked: response.status === 409 }
+  } catch (error) {
+    console.error("[quote] backend update failed", error)
+    return { ok: false }
   }
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { submitQuoteRequest } from "@/app/actions/quote"
+import { submitQuoteRequest, updateQuoteRequest } from "@/app/actions/quote"
 import { quoteRequestSchema } from "@/components/forms/formSchemas"
 import { useReducedMotion } from "@/hooks/useReducedMotion"
 import { cn } from "@/lib/cn"
@@ -24,6 +24,25 @@ import {
 import { initialState, type StepId, type WizardProps, type WizardState } from "./quoteWizardTypes"
 import { StepProgress, btnGhost, btnPrimary } from "./quoteWizardUi"
 import { StepBody } from "./QuoteWizardSteps"
+
+/** Credentials + answers of the last sent request, so the customer can edit it until the team starts on it. */
+const EDIT_KEY = "dmtc:quote-edit"
+type SavedEdit = { id: string; token: string; leadId?: string; sla: number; state: WizardState }
+const loadEdit = (): SavedEdit | null => {
+  try {
+    return JSON.parse(sessionStorage.getItem(EDIT_KEY) || "null")
+  } catch {
+    return null
+  }
+}
+const saveEdit = (v: SavedEdit | null) => {
+  try {
+    if (v) sessionStorage.setItem(EDIT_KEY, JSON.stringify(v))
+    else sessionStorage.removeItem(EDIT_KEY)
+  } catch {
+    /* storage unavailable: edit link just won't survive */
+  }
+}
 
 const QuoteMap = dynamic(() => import("./QuoteMap"), {
   ssr: false,
@@ -50,7 +69,20 @@ export const QuoteWizard = ({
   const [honeypot, setHoneypot] = useState("")
   const [status, setStatus] = useState<"idle" | "submitting" | "done" | "error">("idle")
   const [result, setResult] = useState<{ leadId?: string; sla: number } | null>(null)
+  const [edit, setEdit] = useState<{ id: string; token: string } | null>(null)
+  const [editing, setEditing] = useState(false)
+  const [locked, setLocked] = useState(false)
   const topRef = useRef<HTMLDivElement>(null)
+
+  // Restore the confirmation (and its edit action) after a reload.
+  useEffect(() => {
+    const saved = loadEdit()
+    if (!saved) return
+    setState(saved.state)
+    setEdit({ id: saved.id, token: saved.token })
+    setResult({ leadId: saved.leadId, sla: saved.sla })
+    setStatus("done")
+  }, [])
 
   const patch = (p: Partial<WizardState>) => {
     setState((s) => ({ ...s, ...p }))
@@ -135,9 +167,32 @@ export const QuoteWizard = ({
       setStatus("error")
       return
     }
+    if (editing && edit) {
+      const res = await updateQuoteRequest(edit.id, edit.token, parsed.data)
+      if (res.ok) {
+        saveEdit({ ...edit, token: edit.token, leadId: result?.leadId, sla: result?.sla ?? 24, state })
+        setEditing(false)
+        setStatus("done")
+        scrollTop()
+      } else {
+        if (res.locked) {
+          setEdit(null)
+          setEditing(false)
+          saveEdit(null)
+          setLocked(true)
+          setStatus("done")
+        } else setStatus("error")
+      }
+      return
+    }
     const response = await submitQuoteRequest(parsed.data)
     if (response.ok) {
-      setResult({ leadId: response.leadId, sla: response.quoteSlaHours || 24 })
+      const sla = response.quoteSlaHours || 24
+      setResult({ leadId: response.leadId, sla })
+      if (response.quoteId && response.editToken) {
+        setEdit({ id: response.quoteId, token: response.editToken })
+        saveEdit({ id: response.quoteId, token: response.editToken, leadId: response.leadId, sla, state })
+      }
       setStatus("done")
       scrollTop()
     } else {
@@ -145,7 +200,17 @@ export const QuoteWizard = ({
     }
   }
 
+  const startEdit = () => {
+    setEditing(true)
+    setStatus("idle")
+    goTo(steps.length - 1, "back")
+  }
+
   const reset = () => {
+    saveEdit(null)
+    setEdit(null)
+    setEditing(false)
+    setLocked(false)
     setState(initialState)
     setStepIndex(0)
     setErrors({})
@@ -239,9 +304,21 @@ export const QuoteWizard = ({
           ))}
         </dl>
         <p className="mt-3 text-sm text-ink/70">{tx(COPY.done.note)}</p>
-        <button type="button" className={cn(btnGhost, "mt-5")} onClick={reset}>
-          {tx(COPY.done.another)}
-        </button>
+        {locked ? (
+          <p className="mt-3 text-sm text-ink/70" role="alert">
+            {tx(COPY.done.locked)}
+          </p>
+        ) : null}
+        <div className="mt-5 flex flex-wrap gap-2">
+          {edit ? (
+            <button type="button" className={btnPrimary} onClick={startEdit}>
+              {tx(COPY.done.edit)}
+            </button>
+          ) : null}
+          <button type="button" className={btnGhost} onClick={reset}>
+            {tx(COPY.done.another)}
+          </button>
+        </div>
       </div>,
       { stops: finalStops(), context: [] },
     )
@@ -359,7 +436,7 @@ export const QuoteWizard = ({
           ) : null}
           {isLast ? (
             <button type="submit" className={cn(btnPrimary, "ms-auto")} disabled={status === "submitting"}>
-              {status === "submitting" ? tx(COPY.sending) : tx(COPY.submit)}
+              {status === "submitting" ? tx(COPY.sending) : tx(editing ? COPY.saveChanges : COPY.submit)}
             </button>
           ) : (
             <button
