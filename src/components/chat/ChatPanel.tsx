@@ -239,7 +239,26 @@ export const ChatPanel = ({ open, onClose, onUnreadChange }: ChatPanelProps) => 
     socket.on("conversation:claimed", onClaimed)
     socket.on("conversation:escalated", onEscalated)
 
-    const onConnect = () => joinConversation(conversationId)
+    // Rooms are lost on disconnect: rejoin, and after a *re*connect pull anything missed.
+    let wasConnected = socket.connected
+    const onConnect = () => {
+      joinConversation(conversationId)
+      if (!wasConnected) {
+        wasConnected = true
+        return
+      }
+      const phone = loadIdentity()?.phone
+      if (!phone) return
+      fetchChatHistory(conversationId, phone)
+        .then((history) => {
+          if (!history.resumable) return
+          for (const m of history.messages) {
+            if (m.sender === "customer") continue
+            appendMessage({ id: m.id, role: mapSocketSender(m.sender), text: m.text })
+          }
+        })
+        .catch(() => {})
+    }
     socket.on("connect", onConnect)
 
     return () => {
