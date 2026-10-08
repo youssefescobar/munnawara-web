@@ -1,9 +1,11 @@
-import { FleetShowcase } from "@/components/fleet/FleetShowcase"
-import { PageIntro } from "@/components/ui/PageIntro"
+import { FleetCheck } from "@/components/fleet/FleetCheck"
+import { FleetShowroom } from "@/components/fleet/FleetShowroom"
 import { getFleet, getFleetPage } from "@/content"
 import type { AppLocale } from "@/content/types"
-import { setRequestLocale } from "next-intl/server"
+import { Link } from "@/i18n/navigation"
 import { buildPageMetadata } from "@/lib/seo"
+import { getTranslations, setRequestLocale } from "next-intl/server"
+import Image from "next/image"
 
 type PageProps = {
   params: Promise<{ locale: string }>
@@ -15,58 +17,81 @@ const FleetPage = async ({ params }: PageProps) => {
   const appLocale = locale as AppLocale
   const fleet = getFleet(appLocale)
   const page = getFleetPage(appLocale)
+  const tCommon = await getTranslations("common")
+  const lead = fleet[1] ?? fleet[0]
 
   return (
     <div className="overflow-hidden pt-20">
-      <PageIntro title={page.title} subtitle={page.subtitle} align="start">
-        <p className="ms-0 me-auto mt-6 max-w-2xl text-base leading-relaxed text-ink/70 md:text-lg">
-          {page.intro}
-        </p>
-      </PageIntro>
-
-      <section
-        className="mx-auto mt-12 max-w-[80rem] px-4 md:mt-14 md:px-10"
-        aria-labelledby="fleet-types-heading"
-      >
-        <h2 id="fleet-types-heading" className="sr-only">
-          {page.typesEyebrow}
-        </h2>
-        <p className="font-label mb-4 text-center text-xs font-semibold tracking-[0.18em] text-orange uppercase">
-          {page.typesEyebrow}
-        </p>
-        <ul className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-          {fleet.map((bus) => (
-            <li key={bus.id}>
-              <span className="font-label inline-flex rounded-full border border-ink/10 bg-surface-muted px-4 py-2 text-sm font-medium text-ink">
-                {bus.name}
-              </span>
-            </li>
-          ))}
-        </ul>
+      <section className="mx-auto grid max-w-[80rem] items-center gap-10 px-4 pt-6 md:px-10 md:pt-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:gap-14">
+        <div>
+          <h1 className="font-display text-[clamp(2.5rem,8vw,4.5rem)] leading-[1.05] font-semibold tracking-tight text-ink">
+            {page.title}
+          </h1>
+          <p className="mt-5 text-lg leading-relaxed text-ink md:text-xl">{page.subtitle}</p>
+          <p className="mt-4 max-w-xl text-base leading-relaxed text-ink-muted">{page.intro}</p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Link
+              href="/quote"
+              className="inline-flex rounded-full bg-orange px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange focus-visible:ring-offset-2"
+            >
+              {tCommon("requestQuote")}
+            </Link>
+            <a
+              href="#showroom"
+              className="inline-flex rounded-full px-6 py-3 text-sm font-semibold text-ink ring-1 ring-ink/20 transition hover:ring-ink/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange"
+            >
+              {page.exploreTitle}
+            </a>
+          </div>
+        </div>
+        {lead ? (
+          <div className="relative aspect-[16/10] overflow-hidden rounded-[2rem] bg-surface-muted">
+            <Image
+              src={lead.coverImage}
+              alt={lead.name}
+              fill
+              priority
+              sizes="(min-width:1024px) 55vw, 100vw"
+              className="object-cover"
+            />
+          </div>
+        ) : null}
       </section>
 
       <section
-        className="mx-auto mt-16 max-w-[80rem] px-4 md:mt-20 md:px-10"
+        id="showroom"
+        className="mx-auto mt-20 max-w-[80rem] scroll-mt-24 px-4 md:mt-28 md:px-10"
+        aria-labelledby="fleet-explore-heading"
+      >
+        <div className="mb-8 max-w-2xl">
+          <h2
+            id="fleet-explore-heading"
+            className="font-display text-3xl font-semibold tracking-tight text-ink md:text-5xl"
+          >
+            {page.exploreTitle}
+          </h2>
+          <p className="mt-3 text-base leading-relaxed text-ink-muted">{page.exploreSubtitle}</p>
+        </div>
+        <FleetShowroom categories={fleet} />
+      </section>
+
+      <section
+        className="mx-auto mt-20 grid max-w-[80rem] gap-8 px-4 md:mt-28 md:px-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)] lg:gap-14"
         aria-labelledby="fleet-highlights-heading"
       >
-        <div className="mx-auto max-w-3xl text-center">
-          <h2
-            id="fleet-highlights-heading"
-            className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl md:text-5xl"
-          >
-            {page.highlightsTitle}
-          </h2>
-        </div>
-        <ul className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 lg:gap-4">
+        <h2
+          id="fleet-highlights-heading"
+          className="font-display text-3xl font-semibold tracking-tight text-ink md:text-4xl lg:sticky lg:top-28 lg:self-start"
+        >
+          {page.highlightsTitle}
+        </h2>
+        <ul className="grid gap-x-10 sm:grid-cols-2">
           {page.highlights.map((item) => (
             <li
               key={item}
-              className="flex gap-3 rounded-2xl bg-surface-muted/80 px-4 py-4 text-start text-sm leading-relaxed text-ink/75 sm:text-base"
+              className="flex gap-3 border-b border-border py-4 text-start text-base leading-snug text-ink/85"
             >
-              <span
-                aria-hidden
-                className="mt-1.5 size-1.5 shrink-0 rounded-full bg-orange"
-              />
+              <FleetCheck />
               <span>{item}</span>
             </li>
           ))}
@@ -74,50 +99,32 @@ const FleetPage = async ({ params }: PageProps) => {
       </section>
 
       <section
-        className="mt-16 md:mt-24"
-        aria-labelledby="fleet-explore-heading"
-      >
-        <div className="mx-auto max-w-3xl px-4 text-center md:px-10">
-          <h2
-            id="fleet-explore-heading"
-            className="font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl md:text-5xl"
-          >
-            {page.exploreTitle}
-          </h2>
-          <p className="mt-4 text-base text-ink/70 sm:text-lg">
-            {page.exploreSubtitle}
-          </p>
-        </div>
-        <div className="mt-10 md:mt-12">
-          <FleetShowcase categories={fleet} />
-        </div>
-      </section>
-
-      <section
-        className="mx-auto mt-16 max-w-[80rem] px-4 pb-8 md:mt-24 md:px-10"
+        className="mx-auto mt-20 max-w-[80rem] px-4 pb-16 md:mt-28 md:px-10 md:pb-24"
         aria-labelledby="fleet-clients-heading"
       >
-        <div className="rounded-[1.75rem] bg-black px-6 py-12 text-white sm:px-10 sm:py-14 md:px-14">
+        <div className="rounded-[2rem] bg-black px-6 py-12 text-white sm:px-10 sm:py-16 md:px-16">
           <h2
             id="fleet-clients-heading"
-            className="font-display text-3xl font-semibold tracking-tight sm:text-4xl"
+            className="max-w-xl font-display text-3xl font-semibold tracking-tight sm:text-4xl"
           >
             {page.clientsTitle}
           </h2>
-          <ul className="mt-8 grid gap-3 sm:grid-cols-2 sm:gap-4">
+          <ul className="mt-8 flex flex-wrap gap-2.5">
             {page.clients.map((item) => (
               <li
                 key={item}
-                className="flex gap-3 text-start text-sm leading-relaxed text-white/70 sm:text-base"
+                className="rounded-full px-4 py-2 text-sm leading-snug text-white/85 ring-1 ring-white/20"
               >
-                <span
-                  aria-hidden
-                  className="mt-2 size-1.5 shrink-0 rounded-full bg-orange"
-                />
-                <span>{item}</span>
+                {item}
               </li>
             ))}
           </ul>
+          <Link
+            href="/quote"
+            className="mt-10 inline-flex rounded-full bg-orange px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange focus-visible:ring-offset-2 focus-visible:ring-offset-black"
+          >
+            {tCommon("requestQuote")}
+          </Link>
         </div>
       </section>
     </div>

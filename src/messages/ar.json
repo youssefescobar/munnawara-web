@@ -210,6 +210,11 @@
     "showMore": "المزيد",
     "moreImagesTitle": "المزيد من الصور",
     "moreImagesSubtitle": "صور مؤقتة حتى اعتماد الأصول النهائية",
-    "imagePlaceholder": "الصورة قريباً"
+    "imagePlaceholder": "الصورة قريباً",
+    "categoriesLabel": "فئات الأسطول",
+    "photoCount": "الصورة {current} من {total}",
+    "openPhoto": "افتح الصورة بملء الشاشة",
+    "specsAmenities": "على متن الحافلة",
+    "showroomLabel": "معرض الأسطول"
   }
 }

@@ -210,6 +210,11 @@
     "showMore": "Show more",
     "moreImagesTitle": "More photos",
     "moreImagesSubtitle": "Gallery placeholders until final assets are ready",
-    "imagePlaceholder": "Photo coming soon"
+    "imagePlaceholder": "Photo coming soon",
+    "categoriesLabel": "Fleet categories",
+    "photoCount": "Photo {current} of {total}",
+    "openPhoto": "Open photo full screen",
+    "specsAmenities": "On board",
+    "showroomLabel": "Fleet showroom"
   }
 }
