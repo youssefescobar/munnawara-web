@@ -71,7 +71,7 @@ export const LabHome = ({ hero, points, closing }: LabHomeProps) => {
 
     const stage = createBusStage({
       container: canvas,
-      modelUrl: "/models/bus_durrah_v2.glb",
+      modelUrl: "/models/bus_durrah_v3.glb",
       side: locale === "ar" ? -1 : 1,
       animate: !reduced,
       onFrame: paint,

@@ -1,5 +1,4 @@
 import {
-  ACESFilmicToneMapping,
   AmbientLight,
   RepeatWrapping,
   PointLight,
@@ -8,11 +7,12 @@ import {
   Box3,
   CanvasTexture,
   DirectionalLight,
-  BufferGeometry,
   Group,
   Object3D,
   Mesh,
   MeshBasicMaterial,
+  MeshStandardMaterial,
+  NeutralToneMapping,
   PerspectiveCamera,
   PlaneGeometry,
   PMREMGenerator,
@@ -68,63 +68,9 @@ const sampleShot = (p: number): Shot => {
   }
 }
 
-// The GLB is one merged mesh, so carve each tyre out by position and spin it on its own axle.
-// Numbers are in the mesh's local space (nose = -z), measured from this model.
-// ponytail: hand-measured axles; re-measure if the GLB is rebuilt.
-const WHEEL_R = 0.0755 // hub centre to ground (bbox bottom is -0.272)
-const WHEEL_Y = -0.1965 // hub centre height, fitted from the outer rim face
-const AXLES = [-0.5859, 0.354, 0.5645]
-const WHEEL_X_MIN = 0.1
-// World radius of a tyre: mesh scale 1.25, then the pivot scales local length 2.5 to BUS_LENGTH.
-const WHEEL_WORLD_R = WHEEL_R * 1.25 * (BUS_LENGTH / 2.5)
-
-const splitWheels = (model: Object3D): Group[] => {
-  let body: Mesh | undefined
-  model.traverse((o) => {
-    if (o instanceof Mesh && (!body || o.geometry.attributes.position.count > body.geometry.attributes.position.count)) body = o
-  })
-  const index = body?.geometry.index
-  if (!body || !index) return []
-  const pos = body.geometry.attributes.position
-  const taken = new Map<string, number[]>()
-  const keep: number[] = []
-  const r2 = (WHEEL_R * 1.04) ** 2
-  const key = (z: number, x: number) => `${AXLES.findIndex((a) => Math.abs(a - z) < 0.12)}${x > 0 ? "R" : "L"}`
-  for (let i = 0; i < index.count; i += 3) {
-    const t = [index.getX(i), index.getX(i + 1), index.getX(i + 2)]
-    const cz = (pos.getZ(t[0]) + pos.getZ(t[1]) + pos.getZ(t[2])) / 3
-    const cx = (pos.getX(t[0]) + pos.getX(t[1]) + pos.getX(t[2])) / 3
-    const axle = AXLES.find((a) => Math.abs(a - cz) < 0.12)
-    const inside =
-      axle !== undefined &&
-      Math.abs(cx) > WHEEL_X_MIN &&
-      t.every((v) => (pos.getZ(v) - axle) ** 2 + (pos.getY(v) - WHEEL_Y) ** 2 <= r2)
-    if (inside) {
-      const k = key(cz, cx)
-      const list = taken.get(k) ?? []
-      list.push(...t)
-      taken.set(k, list)
-    } else keep.push(...t)
-  }
-  body.geometry.setIndex(keep)
-  const groups: Group[] = []
-  for (const [k, tris] of taken) {
-    const axle = AXLES[Number(k[0])]
-    const geo = new BufferGeometry()
-    for (const [name, attr] of Object.entries(body.geometry.attributes)) geo.setAttribute(name, attr)
-    geo.setIndex(tris)
-    const tyre = new Mesh(geo, body.material)
-    tyre.position.set(0, -WHEEL_Y, -axle) // the pivot below sits on the axle centre
-    const pivot = new Group()
-    pivot.position.set(k.endsWith("R") ? 0.178 : -0.178, WHEEL_Y, axle)
-    // Each wheel spins about the bus's x axis, so offset x is handled by the pivot, not the tyre.
-    tyre.position.x = k.endsWith("R") ? -0.178 : 0.178
-    pivot.add(tyre)
-    body.add(pivot)
-    groups.push(pivot)
-  }
-  return groups
-}
+// Hub height above ground in model units (2.5 long), scaled to BUS_LENGTH.
+const WHEEL_WORLD_R = 0.0943 * (BUS_LENGTH / 2.5)
+const WHEEL_NAMES = ["front", "drive", "tag"].flatMap((a) => [`wheel_${a}_L`, `wheel_${a}_R`])
 
 type BusStageOptions = {
   container: HTMLElement
@@ -155,8 +101,8 @@ export const createBusStage = ({
   }
 
   renderer.outputColorSpace = SRGBColorSpace
-  renderer.toneMapping = ACESFilmicToneMapping
-  renderer.toneMappingExposure = 1.25
+  renderer.toneMapping = NeutralToneMapping
+  renderer.toneMappingExposure = 1
   renderer.domElement.style.cssText = "display:block;width:100%;height:100%"
   container.appendChild(renderer.domElement)
 
@@ -164,18 +110,18 @@ export const createBusStage = ({
   const pmrem = new PMREMGenerator(renderer)
   const envMap = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
   scene.environment = envMap
-  scene.environmentIntensity = 1.1
-  scene.add(new AmbientLight(0xffffff, 0.35))
+  scene.environmentIntensity = 1
+  scene.add(new AmbientLight(0xffffff, 0.2))
 
-  const sun = new DirectionalLight(0xfff1e0, 2.4)
+  const sun = new DirectionalLight(0xffffff, 2)
   sun.position.set(-4, 7, 5)
   scene.add(sun)
 
   // Brand-coloured rim lights so the black coach keeps its silhouette on a dark stage.
-  const rimWarm = new DirectionalLight(0xff8a3d, 2.2)
+  const rimWarm = new DirectionalLight(0xff8a3d, 0.5)
   rimWarm.position.set(5, 3, -6)
   scene.add(rimWarm)
-  const rimCool = new DirectionalLight(0x9b7bff, 1.6)
+  const rimCool = new DirectionalLight(0x9b7bff, 0.4)
   rimCool.position.set(-6, 4, -4)
   scene.add(rimCool)
 
@@ -249,8 +195,7 @@ export const createBusStage = ({
   const haloTexture = new CanvasTexture(haloCanvas)
   const headlights = new Group()
   const halos: Mesh[] = []
-  // ponytail: positions are eyeballed for this model; recalibrate if the GLB changes.
-  const HEADLIGHT = { x: 0.075, y: 0.075, z: BUS_LENGTH / 2 + 0.02 }
+  // Placeholder positions; per-frame they snap to the GLB's headlight_L/R anchors.
   for (const sx of [-1, 1]) {
     const halo = new Mesh(
       new PlaneGeometry(BUS_LENGTH * 0.12, BUS_LENGTH * 0.12),
@@ -262,12 +207,12 @@ export const createBusStage = ({
         opacity: 0,
       }),
     )
-    halo.position.set(sx * HEADLIGHT.x * BUS_LENGTH, HEADLIGHT.y * BUS_LENGTH, HEADLIGHT.z)
+    halo.position.set(sx * 0.35, 0.4, BUS_LENGTH / 2)
     headlights.add(halo)
     halos.push(halo)
   }
   const beam = new PointLight(0xffe2b0, 0, BUS_LENGTH * 2, 1.6)
-  beam.position.set(0, HEADLIGHT.y * BUS_LENGTH, HEADLIGHT.z + 1.2)
+  beam.position.set(0, 0.4, BUS_LENGTH / 2 + 1.2)
   headlights.add(beam)
   bus.add(headlights)
 
@@ -296,7 +241,10 @@ export const createBusStage = ({
   if (animate) window.addEventListener("pointermove", onPointer)
   // Intro: the coach rolls in from behind the camera while the camera swings round to the hero angle.
   let intro = animate ? 0 : 1
-  const wheels: Group[] = []
+  const wheels: Object3D[] = []
+  let lampMat: MeshStandardMaterial | undefined
+  let anchorL: Object3D | undefined
+  let anchorR: Object3D | undefined
   let target = 0
   let current = 0
   let visible = true
@@ -327,6 +275,15 @@ export const createBusStage = ({
     const glow = shot.glow * ie
     for (const h of halos) (h.material as MeshBasicMaterial).opacity = glow * 0.7
     beam.intensity = glow * 2.5
+    if (lampMat) lampMat.emissiveIntensity = glow * 3
+    // Anchors live in model space; halos live in bus space (bus moves along z), so convert.
+    for (const [halo, anchor] of [[halos[0], anchorL], [halos[1], anchorR]] as const) {
+      if (anchor) bus.worldToLocal(anchor.getWorldPosition(halo.position))
+    }
+    if (anchorL && anchorR) {
+      beam.position.copy(halos[0].position).add(halos[1].position).multiplyScalar(0.5)
+      beam.position.z += 1.2
+    }
     for (const h of halos) h.lookAt(camera.position)
     camera.position.set(
       lookAt.x + d * Math.sin(az) * Math.cos(el),
@@ -376,7 +333,26 @@ export const createBusStage = ({
     (gltf) => {
       if (disposed) return
       const model = gltf.scene
-      wheels.push(...splitWheels(model))
+      for (const n of WHEEL_NAMES) {
+        const w = model.getObjectByName(n)
+        if (w) wheels.push(w)
+      }
+      anchorL = model.getObjectByName("headlight_L") ?? undefined
+      anchorR = model.getObjectByName("headlight_R") ?? undefined
+      const maxAniso = renderer.capabilities.getMaxAnisotropy()
+      model.traverse((o) => {
+        const mesh = o as Mesh
+        if (!mesh.isMesh) return
+        const m = mesh.material as MeshStandardMaterial
+        for (const t of [m.map, m.roughnessMap, m.metalnessMap, m.emissiveMap]) if (t) t.anisotropy = maxAniso
+        if (m.name === "headlights") lampMat = m
+        if (m.name === "logo_decal") {
+          m.depthWrite = false
+          m.polygonOffset = true
+          m.polygonOffsetFactor = -2
+        }
+      })
+      if (lampMat) lampMat.emissiveIntensity = 0
       const box = new Box3().setFromObject(model)
       const size = box.getSize(new Vector3())
       const center = box.getCenter(new Vector3())
