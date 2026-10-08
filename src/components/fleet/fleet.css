@@ -15,3 +15,30 @@
     transform: none;
   }
 }
+
+/* Studio-photo backdrop. Matches the grey sweep in fleet/preview.webp, so it is a photo
+   colour, not a brand token, and stays light in dark mode on purpose. */
+.fleet-hero {
+  --fleet-cyc-light: #eeeef0;
+  --fleet-cyc-dark: #d5d6da;
+  --fleet-hero-ink: #1a1520;
+  --fleet-hero-ink-muted: #4a4552;
+  background: radial-gradient(
+    130% 95% at 50% 75%,
+    var(--fleet-cyc-light),
+    var(--fleet-cyc-dark)
+  );
+  color: var(--fleet-hero-ink);
+}
+.fleet-hero__image {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 22%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 22%);
+}
+
+/* Full-bleed hero: no chrome spacer bar above the opening scene */
+html:has([data-fleet-hero]) .site-chrome__spacer {
+  height: 0 !important;
+}
+html:has([data-fleet-hero]) main#main {
+  padding-top: 0;
+}

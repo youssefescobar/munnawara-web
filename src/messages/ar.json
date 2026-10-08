@@ -215,6 +215,8 @@
     "photoCount": "الصورة {current} من {total}",
     "openPhoto": "افتح الصورة بملء الشاشة",
     "specsAmenities": "على متن الحافلة",
-    "showroomLabel": "معرض الأسطول"
+    "showroomLabel": "معرض الأسطول",
+    "showAll": "عرض الكل ({count})",
+    "showLess": "عرض أقل"
   }
 }

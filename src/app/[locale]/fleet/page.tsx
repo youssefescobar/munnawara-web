@@ -1,11 +1,11 @@
 import { FleetCheck } from "@/components/fleet/FleetCheck"
+import { FleetHero } from "@/components/fleet/FleetHero"
 import { FleetShowroom } from "@/components/fleet/FleetShowroom"
 import { getFleet, getFleetPage } from "@/content"
 import type { AppLocale } from "@/content/types"
 import { Link } from "@/i18n/navigation"
 import { buildPageMetadata } from "@/lib/seo"
 import { getTranslations, setRequestLocale } from "next-intl/server"
-import Image from "next/image"
 
 type PageProps = {
   params: Promise<{ locale: string }>
@@ -18,61 +18,36 @@ const FleetPage = async ({ params }: PageProps) => {
   const fleet = getFleet(appLocale)
   const page = getFleetPage(appLocale)
   const tCommon = await getTranslations("common")
-  const lead = fleet[1] ?? fleet[0]
+  const nameOf = (id: string) => fleet.find((bus) => bus.id === id)?.name ?? ""
+  // Left-to-right order of the buses in /fleet/preview.webp.
+  const busLabels = [nameOf("city-2025"), nameOf("premium-vip-2026"), nameOf("vip-2026")] as const
 
   return (
-    <div className="overflow-hidden pt-20">
-      <section className="mx-auto grid max-w-[80rem] items-center gap-10 px-4 pt-6 md:px-10 md:pt-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] lg:gap-14">
-        <div>
-          <h1 className="font-display text-[clamp(2.5rem,8vw,4.5rem)] leading-[1.05] font-semibold tracking-tight text-ink">
-            {page.title}
-          </h1>
-          <p className="mt-5 text-lg leading-relaxed text-ink md:text-xl">{page.subtitle}</p>
-          <p className="mt-4 max-w-xl text-base leading-relaxed text-ink-muted">{page.intro}</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              href="/quote"
-              className="inline-flex rounded-full bg-orange px-6 py-3 text-sm font-semibold text-white transition hover:bg-orange-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange focus-visible:ring-offset-2"
-            >
-              {tCommon("requestQuote")}
-            </Link>
-            <a
-              href="#showroom"
-              className="inline-flex rounded-full px-6 py-3 text-sm font-semibold text-ink ring-1 ring-ink/20 transition hover:ring-ink/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange"
-            >
-              {page.exploreTitle}
-            </a>
-          </div>
-        </div>
-        {lead ? (
-          <div className="relative aspect-[16/10] overflow-hidden rounded-[2rem] bg-surface-muted">
-            <Image
-              src={lead.coverImage}
-              alt={lead.name}
-              fill
-              priority
-              sizes="(min-width:1024px) 55vw, 100vw"
-              className="object-cover"
-            />
-          </div>
-        ) : null}
-      </section>
+    <div>
+      <FleetHero
+        title={page.title}
+        subtitle={page.subtitle}
+        alt={busLabels.join(", ")}
+        busLabels={busLabels}
+      />
 
       <section
         id="showroom"
-        className="mx-auto mt-20 max-w-[80rem] scroll-mt-24 px-4 md:mt-28 md:px-10"
+        className="scroll-mt-24 bg-black py-16 text-white md:py-24"
         aria-labelledby="fleet-explore-heading"
       >
-        <div className="mb-8 max-w-2xl">
-          <h2
-            id="fleet-explore-heading"
-            className="font-display text-3xl font-semibold tracking-tight text-ink md:text-5xl"
-          >
-            {page.exploreTitle}
-          </h2>
-          <p className="mt-3 text-base leading-relaxed text-ink-muted">{page.exploreSubtitle}</p>
+        <div className="mx-auto max-w-[80rem] px-4 md:px-10">
+          <div className="mb-10 max-w-2xl md:mb-14">
+            <h2
+              id="fleet-explore-heading"
+              className="font-display text-3xl font-semibold tracking-tight md:text-5xl"
+            >
+              {page.exploreTitle}
+            </h2>
+            <p className="mt-4 text-base leading-relaxed text-white/65">{page.intro}</p>
+          </div>
+          <FleetShowroom categories={fleet} />
         </div>
-        <FleetShowroom categories={fleet} />
       </section>
 
       <section

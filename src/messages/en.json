@@ -215,6 +215,8 @@
     "photoCount": "Photo {current} of {total}",
     "openPhoto": "Open photo full screen",
     "specsAmenities": "On board",
-    "showroomLabel": "Fleet showroom"
+    "showroomLabel": "Fleet showroom",
+    "showAll": "Show all {count}",
+    "showLess": "Show less"
   }
 }
